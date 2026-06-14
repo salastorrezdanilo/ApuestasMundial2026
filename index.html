@@ -192,7 +192,9 @@
       document.getElementById('btnGuardar').style.display = "none";
     }
 
-    // FUNCIÓN ACTUALIZADA: RENDERIZA TODO EL HISTORIAL COMPLETO ENVIADO DESDE EL SERVER
+
+
+// FUNCIÓN ACTUALIZADA: RENDERIZA EL HISTORIAL Y GUARDA LOS VALORES ORIGINALES
     function actualizarCartilla() {
       const fecha = document.getElementById('fechaPartido').value;
       const nombre = document.getElementById('nombre').value;
@@ -222,7 +224,6 @@
 
           partidos.forEach(p => {
             const div = document.createElement('div');
-            // Agregamos un padding inferior extra cómodo para el bloque de logs
             div.style = "background:#fafafa; border:1px solid #e0e0e0; padding:12px 10px 8px 10px; border-radius:8px; margin-bottom:12px;";
             div.className = "partido-fila-contenedor";
             div.setAttribute('data-id-partido', p.id);
@@ -250,14 +251,15 @@
                                 </div>`;
             }
             
+            // CORRECCIÓN EXTRA: data-orig1 y data-orig2 guardan el valor inicial que vino de la base de datos
             div.innerHTML = `
               <div style="display:flex; align-items:center; justify-content:space-between;">
                 <div style="width:30%; font-size:12px; font-weight:bold;">${p.equipo1}</div>
                 <div style="width:40%; display:flex; justify-content:center; gap:5px; align-items:center;">
                   <input type="hidden" class="eq1-hidden" value="${p.equipo1}">
-                  <input type="number" class="gol1-input" min="0" placeholder="-" value="${p.goles1}" ${dis} style="width:35px; text-align:center; font-weight:bold;">
+                  <input type="number" class="gol1-input" min="0" placeholder="-" value="${p.goles1}" data-orig1="${p.goles1}" ${dis} style="width:35px; text-align:center; font-weight:bold;">
                   <span style="font-size:11px; background:#1a472a; color:#fff; padding:2px 4px; border-radius:3px;">${p.horario}</span>
-                  <input type="number" class="gol2-input" min="0" placeholder="-" value="${p.goles2}" ${dis} style="width:35px; text-align:center; font-weight:bold;">
+                  <input type="number" class="gol2-input" min="0" placeholder="-" value="${p.goles2}" data-orig2="${p.goles2}" ${dis} style="width:35px; text-align:center; font-weight:bold;">
                   <input type="hidden" class="eq2-hidden" value="${p.equipo2}">
                 </div>
                 <div style="width:30%; text-align:right; font-size:12px; font-weight:bold;">${p.equipo2}</div>
@@ -270,6 +272,7 @@
         });
     }
 
+    // EVENTO SUBMIT OPTIMIZADO: DETECTA QUÉ PARTIDOS CAMBIARON REALMENTE
     document.getElementById('formularioMundial').addEventListener('submit', function(e) {
       e.preventDefault();
       const nombre = document.getElementById('nombre').value;
@@ -283,37 +286,48 @@
         const inputG1 = fila.querySelector('.gol1-input');
         const inputG2 = fila.querySelector('.gol2-input');
         
+        // Verificar que la fila sea editable (no bloqueada)
         if (inputG1 && !inputG1.hasAttribute('disabled')) {
           const g1 = inputG1.value;
           const g2 = inputG2.value;
           
+          // Recuperamos los valores que ya existían originalmente en el Sheet
+          const orig1 = inputG1.getAttribute('data-orig1') || "";
+          const orig2 = inputG2.getAttribute('data-orig2') || "";
+          
+          // Solo si el usuario ha completado ambos campos
           if (g1.trim() !== "" && g2.trim() !== "") {
-            resultados.push({
-              idPartido: fila.getAttribute('data-id-partido'),
-              equipo1: fila.querySelector('.eq1-hidden').value,
-              goles1: g1, 
-              goles2: g2,
-              equipo2: fila.querySelector('.eq2-hidden').value
-            });
+            
+            // CORRECCIÓN INTELIGENTE: ¿El pronóstico actual es diferente al original guardado en el Sheet?
+            if (g1.trim() !== orig1.trim() || g2.trim() !== orig2.trim()) {
+              resultados.push({
+                idPartido: fila.getAttribute('data-id-partido'),
+                equipo1: fila.querySelector('.eq1-hidden').value,
+                goles1: g1, 
+                goles2: g2,
+                equipo2: fila.querySelector('.eq2-hidden').value
+              });
+            }
           }
         }
       });
 
+      // Si no hubo ningún cambio manual ni ingresos nuevos, detenemos el envío
       if (resultados.length === 0) { 
-        alert("No tienes pronósticos nuevos o modificables para guardar en este momento."); 
+        alert("No has realizado ningún cambio nuevo ni rellenado pronósticos vacíos para guardar."); 
         return; 
       }
 
       msg.className = "mensaje carga"; 
       msg.style.display = "block"; 
-      msg.textContent = "Guardando tus nuevos pronósticos...";
+      msg.textContent = "Guardando únicamente tus cambios nuevos...";
 
       fetch(`${URL_API}?accion=registrarGoles&usuario=${encodeURIComponent(nombre)}&clave=${encodeURIComponent(clave)}&fecha=${fecha}&resultados=${encodeURIComponent(JSON.stringify(resultados))}`)
         .then(res => res.json())
         .then(res => {
           msg.className = "mensaje exito"; 
           msg.textContent = res.mensaje;
-          actualizarCartilla();
+          actualizarCartilla(); // Refresca y actualiza los nuevos estados originales
         }).catch(err => {
           msg.className = "mensaje";
           msg.style.backgroundColor = "#f8d7da";
@@ -321,6 +335,9 @@
           msg.textContent = "Error al conectar con el servidor.";
         });
     });
+
+
+
 
     function cambiarPestaña(tipo) {
       document.getElementById('seccionCartilla').style.display = tipo === 'cartilla' ? 'block' : 'none';
