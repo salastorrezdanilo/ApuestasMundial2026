@@ -26,6 +26,16 @@
     .categoria-titulo { background: #e2e3e5; padding: 6px 10px; font-weight: bold; font-size: 13px; color: #333; margin-top: 15px; border-radius: 4px; }
     .marcador-real-badge { background: #1a472a; color: #fff; padding: 3px 8px; border-radius: 12px; font-weight: bold; font-size: 12px; }
     .marcador-pendiente-badge { background: #fff3cd; color: #856404; padding: 3px 6px; border-radius: 12px; font-size: 11px; border: 1px solid #ffeeba; }
+
+    /* Ajuste para que los emojis de Twemoji se vean del tamaño correcto */
+    img.emoji {
+      height: 1.2em;
+      width: 1.2em;
+      vertical-align: middle;
+      margin-bottom: 0.2em;
+    }
+
+
   </style>
 </head>
 <body>
@@ -438,5 +448,42 @@
       }
     }
   </script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
+  <script>
+    // Función para procesar y dibujar las banderas como imágenes en Windows
+    function parsearBanderasTwemoji() {
+      if (typeof twemoji !== 'undefined') {
+        twemoji.parse(document.body, {
+          folder: 'svg',
+          ext: '.svg',
+          base: 'https://cdn.jsdelivr.net/npm/@twemoji/api@14.0.2/assets/'
+        });
+      }
+    }
+
+    // Monitorear cuando la cartilla cambie para aplicar las banderas automáticamente
+    const observadorCartilla = new MutationObserver(() => {
+      parsearBanderasTwemoji();
+    });
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      const contenedor = document.getElementById('contenedorCartilla');
+      if (contenedor) {
+        observadorCartilla.observe(contenedor, { childList: true, subtree: true });
+      }
+      // También observar las otras pestañas de resultados si cambian
+      const fixture = document.getElementById('contenedorFixture');
+      if (fixture) {
+        observadorCartilla.observe(fixture, { childList: true, subtree: true });
+      }
+    });
+  </script>
+
+
+
+
+
 </body>
 </html>
