@@ -104,13 +104,12 @@
   <script>
     const URL_API = "https://script.google.com/macros/s/AKfycbwjmb_KLDut1de1GzFrciSVbIyBcKAB70I3FGB_1xb8L04tOKSakiuRgyyaVM30WYiz/exec";
 
-    // FUNCIÓN DE BANDERAS COMPATIBLE CON LOS NOMBRES EXACTOS DE TU SHEET
+    // FUNCIÓN DE BANDERAS ULTRA-NÍTIDAS (HD) ADAPTADA A TU SHEET
     function obtenerBandera(pais) {
       if (!pais) return "";
       const nombre = pais.toLowerCase().trim();
       
       const codigosISO = {
-        // Coincidencias exactas con tu archivo MUNDIAL.txt
         "méxico": "mx", "mexico": "mx", "sudáfrica": "za", "sudafrica": "za",
         "corea del sur": "kr", "rep. checa": "cz", "republica checa": "cz",
         "canadá": "ca", "canada": "ca", "bosnia y herzeg.": "ba", "bosnia": "ba",
@@ -139,14 +138,14 @@
       
       const codigo = codigosISO[nombre];
       
-      // Si no lo encuentra, muestra un icono neutral de fútbol/mundo en lugar de una bandera negra
+      // Si no encuentra el país, usa una imagen genérica nítida de la ONU
       if (!codigo) {
-        return `<img src="https://flagcdn.com/16x12/un.png" style="height: 14px; width: 19px; border-radius: 2px; border: 1px solid #ccc; vertical-align: middle; display: inline-block;" alt="icon">`;
+        return `<img src="https://flagcdn.com/w40/un.png" style="height: 13px; width: 18px; object-fit: cover; border-radius: 2px; border: 1px solid #ccc; vertical-align: middle; display: inline-block;" alt="icon">`;
       }
       
-      // Retorna la bandera en formato png nítido
-      return `<img src="https://flagcdn.com/16x12/${codigo}.png" style="height: 14px; width: 19px; border-radius: 2px; border: 1px solid #ccc; vertical-align: middle; display: inline-block;" alt="${nombre}">`;
-    } 
+      // Cambiamos /16x12/ por /w40/ para traer el archivo en alta definición (HD)
+      return `<img src="https://flagcdn.com/w40/${codigo}.png" style="height: 13px; width: 18px; object-fit: cover; border-radius: 2px; border: 1px solid #ccc; vertical-align: middle; display: inline-block;" alt="${nombre}">`;
+    }
 
 
 
