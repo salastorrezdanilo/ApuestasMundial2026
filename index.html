@@ -94,6 +94,35 @@
   <script>
     const URL_API = "https://script.google.com/macros/s/AKfycbwjmb_KLDut1de1GzFrciSVbIyBcKAB70I3FGB_1xb8L04tOKSakiuRgyyaVM30WYiz/exec";
 
+    // FUNCIÓN CON LOS 48 PAÍSES DEL MUNDIAL 2026
+    function obtenerBandera(pais) {
+      if (!pais) return "";
+      const nombre = pais.toLowerCase().trim();
+      
+      const banderas = {
+        // CONCACAF (Anfitriones y clasificados)
+        "estados unidos": "🇺🇸", "eeuu": "🇺🇸", "méxico": "🇲🇽", "mexico": "🇲🇽", "canadá": "🇨🇦", "canada": "🇨🇦",
+        "costa rica": "🇨🇷", "panamá": "🇵🇦", "panama": "🇵🇦", "jamaica": "🇯🇲", "honduras": "🇭🇳", "el salvador": "🇸🇻", "curazao": "🇨🇼",
+
+        // CONMEBOL
+        "argentina": "🇦🇷", "brasil": "🇧🇷", "uruguay": "🇺🇾", "colombia": "🇨🇴", "ecuador": "🇪🇨", "chile": "🇨🇱", "perú": "🇵🇪", "peru": "🇵🇪", "venezuela": "🇻🇪", "paraguay": "🇵🇾", "bolivia": "🇧🇴",
+
+        // UEFA
+        "francia": "🇫🇷", "inglaterra": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "españa": "🇪🇸", "espana": "🇪🇸", "alemania": "🇩🇪", "bélgica": "🇧🇪", "belgica": "🇧🇪", "países bajos": "🇳🇱", "holanda": "🇳🇱", "italia": "🇮🇹", "portugal": "🇵🇹", "croacia": "🇭🇷", "suiza": "🇨🇭", "dinamarca": "🇩🇰", "serbia": "🇷🇸", "polonia": "🇵🇱", "suecia": "🇸🇪", "turquía": "🇹🇷", "turquia": "🇹🇷",
+
+        // CAF (África)
+        "marruecos": "🇲🇦", "senegal": "🇸🇳", "túnez": "🇹🇳", "tunez": "🇹🇳", "argelia": "🇩🇿", "egipto": "🇪🇬", "nigeria": "🇳🇬", "camerún": "🇨🇲", "camerun": "🇨🇲", "costa de marfil": "🇨🇮", "ghana": "🇬🇭",
+
+        // AFC (Asia) & OFC (Oceanía)
+        "japón": "🇯🇵", "japon": "🇯🇵", "corea del sur": "🇰🇷", "irán": "🇮🇷", "iran": "🇮🇷", "australia": "🇦🇺", "arabia saudita": "🇸🇦", "catar": "🇶🇦", "qatar": "🇶🇦", "irak": "🇮🇶", "emiratos árabes": "🇦🇪", "nueva zelanda": "🇳🇿"
+      };
+      
+      return banderas[nombre] || "🏴"; // Bandera por defecto si hay algún error de tipeo
+    }    
+
+
+
+
     window.addEventListener('DOMContentLoaded', () => {
       const selectorFecha = document.getElementById('fechaPartido');
       const hoy = new Date();
@@ -195,6 +224,8 @@
 
 
 // FUNCIÓN ACTUALIZADA: RENDERIZA EL HISTORIAL Y GUARDA LOS VALORES ORIGINALES
+
+
     function actualizarCartilla() {
       const fecha = document.getElementById('fechaPartido').value;
       const nombre = document.getElementById('nombre').value;
@@ -236,35 +267,48 @@
               let itemsCambios = '';
               p.listaCambios.forEach((cambio, idx) => {
                 itemsCambios += `<div style="margin-top: 4px; color: #444; font-size: 11px; display: flex; justify-content: space-between;">
-                                   <span>📌 Registro #${idx + 1}: <strong>${cambio.goles1} - ${cambio.goles2}</strong></span>
+                                   <span>🔴 Registro #${idx + 1}: <strong>${cambio.goles1} - ${cambio.goles2}</strong></span>
                                    <span style="color: #777; font-size: 10px;">🕒 ${cambio.marcaTemporal}</span>
                                  </div>`;
               });
 
               htmlInfoTiempo = `<div style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 6px; background-color: #f9f9f9; padding: 6px; border-radius: 5px;">
-                                  <div style="font-weight: bold; color: #1a472a; margin-bottom: 3px; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px;">📋 Historial completo de cambios:</div>
+                                  <div style="font-weight: bold; color: #1a472a; margin-bottom: 3px; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px;">Historial de cambios:</div>
                                   ${itemsCambios}
                                 </div>`;
             } else {
               htmlInfoTiempo = `<div style="text-align: center; font-size: 11px; color: #aaa; margin-top: 8px; border-top: 1px dashed #e5e5e5; padding-top: 5px;">
-                                  ⚪ <em>Sin modificaciones previas</em>
+                                  ⚠️ <em>Sin modificaciones previas</em>
                                 </div>`;
             }
-            
-            // CORRECCIÓN EXTRA: data-orig1 y data-orig2 guardan el valor inicial que vino de la base de datos
+
+            // RENDERIZADO CON BANDERAS MUNDIALISTAS
             div.innerHTML = `
               <div style="display:flex; align-items:center; justify-content:space-between;">
-                <div style="width:30%; font-size:12px; font-weight:bold;">${p.equipo1}</div>
-                <div style="width:40%; display:flex; justify-content:center; gap:5px; align-items:center;">
+                <!-- Equipo 1 -->
+                <div style="width:32%; font-size:12px; font-weight:bold; display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:16px; line-height:1;">${obtenerBandera(p.equipo1)}</span>
+                  <span>${p.equipo1}</span>
+                </div>
+                
+                <!-- Marcador -->
+                <div style="width:36%; display:flex; justify-content:center; gap:5px; align-items:center;">
                   <input type="hidden" class="eq1-hidden" value="${p.equipo1}">
                   <input type="number" class="gol1-input" min="0" placeholder="-" value="${p.goles1}" data-orig1="${p.goles1}" ${dis} style="width:35px; text-align:center; font-weight:bold;">
-                  <span style="font-size:11px; background:#1a472a; color:#fff; padding:2px 4px; border-radius:3px;">${p.horario}</span>
+                  <span style="font-size:11px; background:#1a472a; color:#fff; padding:2px 5px; border-radius:4px; font-weight:bold; white-space:nowrap;">${p.horario}</span>
                   <input type="number" class="gol2-input" min="0" placeholder="-" value="${p.goles2}" data-orig2="${p.goles2}" ${dis} style="width:35px; text-align:center; font-weight:bold;">
                   <input type="hidden" class="eq2-hidden" value="${p.equipo2}">
                 </div>
-                <div style="width:30%; text-align:right; font-size:12px; font-weight:bold;">${p.equipo2}</div>
+                
+                <!-- Equipo 2 -->
+                <div style="width:32%; text-align:right; font-size:12px; font-weight:bold; display:flex; align-items:center; justify-content:flex-end; gap:6px;">
+                  <span>${p.equipo2}</span>
+                  <span style="font-size:16px; line-height:1;">${obtenerBandera(p.equipo2)}</span>
+                </div>
               </div>
               ${htmlInfoTiempo}`;
+            
+
               
             cartilla.appendChild(div);
           });
@@ -366,6 +410,7 @@
         document.getElementById('contenedorFixture').innerHTML = "<p style='text-align:center;'>Cargando base oficial...</p>";
         fetch(`${URL_API}?accion=obtenerFixture`).then(r=>r.json()).then(partidos => {
           let h = '<table class="tabla-fixture"><tbody>';
+          
           partidos.forEach(p => {
             let m = (p.golesReal1===""||p.golesReal2==="") ? `<span class="marcador-pendiente-badge">${p.horario}</span>` : `<span class="marcador-real-badge">${p.golesReal1} - ${p.golesReal2}</span>`;
             h += `<tr>
@@ -373,11 +418,21 @@
                       <strong>${p.fecha}</strong><br>
                       <span style="color:#2e7d32; font-weight:600;">${p.grupo}</span>
                     </td>
-                    <td style="text-align:right; font-weight:500;">${p.equipo1}</td>
+                    <!-- Equipo 1 -->
+                    <td style="text-align:right; font-weight:500;">
+                      ${p.equipo1} <span style="font-size:14px; margin-left:3px; vertical-align:middle;">${obtenerBandera(p.equipo1)}</span>
+                    </td>
                     <td style="text-align:center; min-width:70px;">${m}</td>
-                    <td style="text-align:left; font-weight:500;">${p.equipo2}</td>
+                    <!-- Equipo 2 -->
+                    <td style="text-align:left; font-weight:500;">
+                      <span style="font-size:14px; margin-right:3px; vertical-align:middle;">${obtenerBandera(p.equipo2)}</span> ${p.equipo2}
+                    </td>
                   </tr>`;
           });
+
+
+
+
           document.getElementById('contenedorFixture').innerHTML = h + '</tbody></table>';
         });
       }
