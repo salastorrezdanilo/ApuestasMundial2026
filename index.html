@@ -104,44 +104,51 @@
   <script>
     const URL_API = "https://script.google.com/macros/s/AKfycbwjmb_KLDut1de1GzFrciSVbIyBcKAB70I3FGB_1xb8L04tOKSakiuRgyyaVM30WYiz/exec";
 
-    // FUNCIÓN CON LOS 48 PAÍSES DEL MUNDIAL 2026
+    // FUNCIÓN DE BANDERAS COMPATIBLE CON LOS NOMBRES EXACTOS DE TU SHEET
     function obtenerBandera(pais) {
       if (!pais) return "";
       const nombre = pais.toLowerCase().trim();
       
-      const banderas = {
-
-// === PAÍSES SOLICITADOS EXTRA ===
-        "sudáfrica": "🇿🇦", "sudafrica": "🇿🇦",
-        "república checa": "🇨🇿", "republica checa": "🇨🇿", "chequia": "🇨🇿",
-        "bosnia": "🇧🇦", "bosnia y herzegovina": "🇧🇦",
-        "haití": "🇭🇹", "haiti": "🇭🇹",
-        "escocia": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
-        "cabo verde": "🇨🇻",
-        "noruega": "🇳🇴",
-        "austria": "🇦🇹",
-        "jordania": "🇯🇴",
-        "república del congo": "🇨🇬", "republica del congo": "🇨🇬", "congo": "🇨🇬",
-        "uzbekistán": "🇺🇿", "uzbekistan": "🇺🇿",
-        // CONCACAF (Anfitriones y clasificados)
-        "estados unidos": "🇺🇸", "eeuu": "🇺🇸", "méxico": "🇲🇽", "mexico": "🇲🇽", "canadá": "🇨🇦", "canada": "🇨🇦",
-        "costa rica": "🇨🇷", "panamá": "🇵🇦", "panama": "🇵🇦", "jamaica": "🇯🇲", "honduras": "🇭🇳", "el salvador": "🇸🇻", "curazao": "🇨🇼",
-
-        // CONMEBOL
-        "argentina": "🇦🇷", "brasil": "🇧🇷", "uruguay": "🇺🇾", "colombia": "🇨🇴", "ecuador": "🇪🇨", "chile": "🇨🇱", "perú": "🇵🇪", "peru": "🇵🇪", "venezuela": "🇻🇪", "paraguay": "🇵🇾", "bolivia": "🇧🇴",
-
-        // UEFA
-        "francia": "🇫🇷", "inglaterra": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "españa": "🇪🇸", "espana": "🇪🇸", "alemania": "🇩🇪", "bélgica": "🇧🇪", "belgica": "🇧🇪", "países bajos": "🇳🇱", "holanda": "🇳🇱", "italia": "🇮🇹", "portugal": "🇵🇹", "croacia": "🇭🇷", "suiza": "🇨🇭", "dinamarca": "🇩🇰", "serbia": "🇷🇸", "polonia": "🇵🇱", "suecia": "🇸🇪", "turquía": "🇹🇷", "turquia": "🇹🇷",
-
-        // CAF (África)
-        "marruecos": "🇲🇦", "senegal": "🇸🇳", "túnez": "🇹🇳", "tunez": "🇹🇳", "argelia": "🇩🇿", "egipto": "🇪🇬", "nigeria": "🇳🇬", "camerún": "🇨🇲", "camerun": "🇨🇲", "costa de marfil": "🇨🇮", "ghana": "🇬🇭",
-
-        // AFC (Asia) & OFC (Oceanía)
-        "japón": "🇯🇵", "japon": "🇯🇵", "corea del sur": "🇰🇷", "irán": "🇮🇷", "iran": "🇮🇷", "australia": "🇦🇺", "arabia saudita": "🇸🇦", "catar": "🇶🇦", "qatar": "🇶🇦", "irak": "🇮🇶", "emiratos árabes": "🇦🇪", "nueva zelanda": "🇳🇿"
+      const codigosISO = {
+        // Coincidencias exactas con tu archivo MUNDIAL.txt
+        "méxico": "mx", "mexico": "mx", "sudáfrica": "za", "sudafrica": "za",
+        "corea del sur": "kr", "rep. checa": "cz", "republica checa": "cz",
+        "canadá": "ca", "canada": "ca", "bosnia y herzeg.": "ba", "bosnia": "ba",
+        "estados unidos": "us", "eeuu": "us", "paraguay": "py",
+        "catar": "qa", "qatar": "qa", "suiza": "ch",
+        "brasil": "br", "marruecos": "ma",
+        "haití": "ht", "haiti": "ht", "escocia": "gb-sct",
+        "australia": "au", "turquía": "tr", "turquia": "tr",
+        "alemania": "de", "curazao": "cw",
+        "países bajos": "nl", "holanda": "nl", "japón": "jp", "japon": "jp",
+        "costa de marfil": "ci", "ecuador": "ec",
+        "suecia": "se", "túnez": "tn", "tunez": "tn",
+        "españa": "es", "espana": "es", "cabo verde": "cv",
+        "bélgica": "be", "belgica": "be", "egipto": "eg",
+        "arabia saudita": "sa", "uruguay": "uy",
+        "irán": "ir", "iran": "ir", "nueva zelanda": "nz",
+        "francia": "fr", "senegal": "sn",
+        "irak": "iq", "noruega": "no",
+        "argentina": "ar", "argelia": "dz",
+        "austria": "at", "jordania": "jo",
+        "portugal": "pt", "rep. del congo": "cg", "rep. congo": "cg", "congo": "cg",
+        "inglaterra": "gb-eng", "croacia": "hr",
+        "ghana": "gh", "panamá": "pa", "panama": "pa",
+        "uzbekistán": "uz", "uzbekistan": "uz", "colombia": "co"
       };
       
-      return banderas[nombre] || "🏴"; // Bandera por defecto si hay algún error de tipeo
-    }    
+      const codigo = codigosISO[nombre];
+      
+      // Si no lo encuentra, muestra un icono neutral de fútbol/mundo en lugar de una bandera negra
+      if (!codigo) {
+        return `<img src="https://flagcdn.com/16x12/un.png" style="height: 14px; width: 19px; border-radius: 2px; border: 1px solid #ccc; vertical-align: middle; display: inline-block;" alt="icon">`;
+      }
+      
+      // Retorna la bandera en formato png nítido
+      return `<img src="https://flagcdn.com/16x12/${codigo}.png" style="height: 14px; width: 19px; border-radius: 2px; border: 1px solid #ccc; vertical-align: middle; display: inline-block;" alt="${nombre}">`;
+    } 
+
+
 
 
 
@@ -284,38 +291,35 @@
             
             const dis = p.bloqueado ? 'disabled style="width: 35px; text-align: center; background-color: #e9ecef; color: #6c757d; border: 1px solid #ccc; cursor: not-allowed; font-weight: bold;"' : '';
             
-            // CONSTRUCCIÓN DEL HISTORIAL COMPLETO ITERANDO LA LISTA
             let htmlInfoTiempo = '';
             if (p.listaCambios && p.listaCambios.length > 0) {
               let itemsCambios = '';
               p.listaCambios.forEach((cambio, idx) => {
                 itemsCambios += `<div style="margin-top: 4px; color: #444; font-size: 11px; display: flex; justify-content: space-between;">
-                                   <span>🔴 Registro #${idx + 1}: <strong>${cambio.goles1} - ${cambio.goles2}</strong></span>
+                                   <span>📌 Registro #${idx + 1}: <strong>${cambio.goles1} - ${cambio.goles2}</strong></span>
                                    <span style="color: #777; font-size: 10px;">🕒 ${cambio.marcaTemporal}</span>
                                  </div>`;
               });
 
               htmlInfoTiempo = `<div style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 6px; background-color: #f9f9f9; padding: 6px; border-radius: 5px;">
-                                  <div style="font-weight: bold; color: #1a472a; margin-bottom: 3px; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px;">Historial de cambios:</div>
+                                  <div style="font-weight: bold; color: #1a472a; margin-bottom: 3px; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px;">📋 Historial de cambios:</div>
                                   ${itemsCambios}
                                 </div>`;
             } else {
               htmlInfoTiempo = `<div style="text-align: center; font-size: 11px; color: #aaa; margin-top: 8px; border-top: 1px dashed #e5e5e5; padding-top: 5px;">
-                                  ⚠️ <em>Sin modificaciones previas</em>
+                                  ⚪ <em>Sin modificaciones previas</em>
                                 </div>`;
             }
-
-            // RENDERIZADO CON BANDERAS MUNDIALISTAS
+            
+            // ESTRUCTURA CORREGIDA SIN TEXTO ROTO
             div.innerHTML = `
               <div style="display:flex; align-items:center; justify-content:space-between;">
-                <!-- Equipo 1 -->
-                <div style="width:32%; font-size:12px; font-weight:bold; display:flex; align-items:center; gap:6px;">
-                  <span style="font-size:16px; line-height:1;">${obtenerBandera(p.equipo1)}</span>
-                  <span>${p.equipo1}</span>
+                <div style="width:35%; font-size:12px; font-weight:bold; display:flex; align-items:center; gap:6px; justify-content:flex-start;">
+                  ${obtenerBandera(p.equipo1)}
+                  <span style="text-transform: uppercase;">${p.equipo1}</span>
                 </div>
                 
-                <!-- Marcador -->
-                <div style="width:36%; display:flex; justify-content:center; gap:5px; align-items:center;">
+                <div style="width:30%; display:flex; justify-content:center; gap:5px; align-items:center;">
                   <input type="hidden" class="eq1-hidden" value="${p.equipo1}">
                   <input type="number" class="gol1-input" min="0" placeholder="-" value="${p.goles1}" data-orig1="${p.goles1}" ${dis} style="width:35px; text-align:center; font-weight:bold;">
                   <span style="font-size:11px; background:#1a472a; color:#fff; padding:2px 5px; border-radius:4px; font-weight:bold; white-space:nowrap;">${p.horario}</span>
@@ -323,21 +327,23 @@
                   <input type="hidden" class="eq2-hidden" value="${p.equipo2}">
                 </div>
                 
-                <!-- Equipo 2 -->
-                <div style="width:32%; text-align:right; font-size:12px; font-weight:bold; display:flex; align-items:center; justify-content:flex-end; gap:6px;">
-                  <span>${p.equipo2}</span>
-                  <span style="font-size:16px; line-height:1;">${obtenerBandera(p.equipo2)}</span>
+                <div style="width:35%; text-align:right; font-size:12px; font-weight:bold; display:flex; align-items:center; justify-content:flex-end; gap:6px;">
+                  <span style="text-transform: uppercase;">${p.equipo2}</span>
+                  ${obtenerBandera(p.equipo2)}
                 </div>
               </div>
               ${htmlInfoTiempo}`;
-            
-
               
             cartilla.appendChild(div);
           });
           btnGuardar.style.display = "block";
         });
     }
+
+
+
+
+
 
     // EVENTO SUBMIT OPTIMIZADO: DETECTA QUÉ PARTIDOS CAMBIARON REALMENTE
     document.getElementById('formularioMundial').addEventListener('submit', function(e) {
@@ -461,40 +467,6 @@
       }
     }
   </script>
-
-
-  <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
-  <script>
-    // Función para procesar y dibujar las banderas como imágenes en Windows
-    function parsearBanderasTwemoji() {
-      if (typeof twemoji !== 'undefined') {
-        twemoji.parse(document.body, {
-          folder: 'svg',
-          ext: '.svg',
-          base: 'https://cdn.jsdelivr.net/npm/@twemoji/api@14.0.2/assets/'
-        });
-      }
-    }
-
-    // Monitorear cuando la cartilla cambie para aplicar las banderas automáticamente
-    const observadorCartilla = new MutationObserver(() => {
-      parsearBanderasTwemoji();
-    });
-    
-    window.addEventListener('DOMContentLoaded', () => {
-      const contenedor = document.getElementById('contenedorCartilla');
-      if (contenedor) {
-        observadorCartilla.observe(contenedor, { childList: true, subtree: true });
-      }
-      // También observar las otras pestañas de resultados si cambian
-      const fixture = document.getElementById('contenedorFixture');
-      if (fixture) {
-        observadorCartilla.observe(fixture, { childList: true, subtree: true });
-      }
-    });
-  </script>
-
-
 
 
 
