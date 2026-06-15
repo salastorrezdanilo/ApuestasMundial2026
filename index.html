@@ -295,18 +295,18 @@
               let itemsCambios = '';
               p.listaCambios.forEach((cambio, idx) => {
                 itemsCambios += `<div style="margin-top: 4px; color: #444; font-size: 11px; display: flex; justify-content: space-between;">
-                                   <span>📌 Registro #${idx + 1}: <strong>${cambio.goles1} - ${cambio.goles2}</strong></span>
+                                   <span>🔴 Registro #${idx + 1}: <strong>${cambio.goles1} - ${cambio.goles2}</strong></span>
                                    <span style="color: #777; font-size: 10px;">🕒 ${cambio.marcaTemporal}</span>
                                  </div>`;
               });
 
               htmlInfoTiempo = `<div style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 6px; background-color: #f9f9f9; padding: 6px; border-radius: 5px;">
-                                  <div style="font-weight: bold; color: #1a472a; margin-bottom: 3px; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px;">📋 Historial de cambios:</div>
+                                  <div style="font-weight: bold; color: #1a472a; margin-bottom: 3px; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px;">Historial de cambios:</div>
                                   ${itemsCambios}
                                 </div>`;
             } else {
               htmlInfoTiempo = `<div style="text-align: center; font-size: 11px; color: #aaa; margin-top: 8px; border-top: 1px dashed #e5e5e5; padding-top: 5px;">
-                                  ⚪ <em>Sin modificaciones previas</em>
+                                  ⚠️ <em>Sin modificaciones previas</em>
                                 </div>`;
             }
             
