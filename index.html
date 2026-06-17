@@ -27,15 +27,12 @@
     .marcador-real-badge { background: #1a472a; color: #fff; padding: 3px 8px; border-radius: 12px; font-weight: bold; font-size: 12px; }
     .marcador-pendiente-badge { background: #fff3cd; color: #856404; padding: 3px 6px; border-radius: 12px; font-size: 11px; border: 1px solid #ffeeba; }
 
-    /* Ajuste para que los emojis de Twemoji se vean del tamaño correcto */
     img.emoji {
       height: 1.2em;
       width: 1.2em;
       vertical-align: middle;
       margin-bottom: 0.2em;
     }
-
-
   </style>
 </head>
 <body>
@@ -85,14 +82,14 @@
         <hr style="border: 0; border-top: 1px dashed #ccc; margin: 20px 0;">
         
         <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
-  <span style="font-size: 13px; color: #1b5e20; font-weight: bold; display: block; margin-bottom: 5px;">👀 Modo Espiar Pronósticos Públicos</span>
-  <button type="button" id="btnVerDanilo" onclick="cargarPronosticosPublicos()" style="background: #2e7d32; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold;">
-    Ver Pronósticos de Danilo Torrez
-  </button>
-  <p id="avisoPublico" style="font-size: 11px; color: #555; margin: 4px 0 0 0; display: none;">
-    *Nota: Los resultados se liberan estrictamente 10 minutos antes de cada partido.
-  </p>
-</div>
+          <span style="font-size: 13px; color: #1b5e20; font-weight: bold; display: block; margin-bottom: 5px;">👀 Modo Espiar Pronósticos Públicos</span>
+          <button type="button" id="btnVerDanilo" onclick="cargarPronosticosPublicos()" style="background: #2e7d32; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold;">
+            Ver Pronósticos de Danilo Torrez
+          </button>
+          <p id="avisoPublico" style="font-size: 11px; color: #555; margin: 4px 0 0 0; display: none;">
+            *Nota: Los resultados se liberan estrictamente 10 minutos antes de cada partido.
+          </p>
+        </div>
 
         <div id="contenedorCartilla">
           <p id="textoGuiaCartilla" style="text-align: center; color: #999; font-style: italic;">Por favor, selecciona tu nombre para continuar.</p>
@@ -115,7 +112,7 @@
   <script>
     const URL_API = "https://script.google.com/macros/s/AKfycbx_bzFC74dVuAYkV63CtBojPxrjx6GpFxzGNF_8xq26r5oZ_Xpz8UDPzgp2hBmrRxQv/exec";
 
-    // FUNCIÓN DE BANDERAS ULTRA-NÍTIDAS (HD) ADAPTADA A TU SHEET
+    // FUNCIÓN DE BANDERAS ULTRA-NÍTIDAS (HD)
     function obtenerBandera(pais) {
       if (!pais) return "";
       const nombre = pais.toLowerCase().trim();
@@ -148,36 +145,30 @@
       };
       
       const codigo = codigosISO[nombre];
-      
-      // Si no encuentra el país, usa una imagen genérica nítida de la ONU
       if (!codigo) {
         return `<img src="https://flagcdn.com/w40/un.png" style="height: 13px; width: 18px; object-fit: cover; border-radius: 2px; border: 1px solid #ccc; vertical-align: middle; display: inline-block;" alt="icon">`;
       }
-      
-      // Cambiamos /16x12/ por /w40/ para traer el archivo en alta definición (HD)
       return `<img src="https://flagcdn.com/w40/${codigo}.png" style="height: 13px; width: 18px; object-fit: cover; border-radius: 2px; border: 1px solid #ccc; vertical-align: middle; display: inline-block;" alt="${nombre}">`;
     }
-
-
-
-
-
 
     window.addEventListener('DOMContentLoaded', () => {
       const selectorFecha = document.getElementById('fechaPartido');
       const hoy = new Date();
       selectorFecha.value = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
       
+      // Consultamos la acción correcta configurada en tu Apps Script
       fetch(`${URL_API}?accion=obtenerParticipantes`)
         .then(res => res.json())
         .then(datos => {
           const select = document.getElementById('nombre');
           select.innerHTML = '<option value="" disabled selected>-- Selecciona tu nombre --</option>';
+          if(datos.error) throw new Error(datos.error);
           datos.forEach(p => {
             let opt = document.createElement('option');
             opt.value = p; opt.textContent = p; select.appendChild(opt);
           });
-        }).catch(() => {
+        }).catch((err) => {
+          console.error(err);
           document.getElementById('nombre').innerHTML = '<option value="" disabled>Error de conexión</option>';
         });
     });
@@ -261,11 +252,6 @@
       document.getElementById('btnGuardar').style.display = "none";
     }
 
-
-
-// FUNCIÓN ACTUALIZADA: RENDERIZA EL HISTORIAL Y GUARDA LOS VALORES ORIGINALES
-
-
     function actualizarCartilla() {
       const fecha = document.getElementById('fechaPartido').value;
       const nombre = document.getElementById('nombre').value;
@@ -321,7 +307,6 @@
                                 </div>`;
             }
             
-            // ESTRUCTURA CORREGIDA SIN TEXTO ROTO
             div.innerHTML = `
               <div style="display:flex; align-items:center; justify-content:space-between;">
                 <div style="width:35%; font-size:12px; font-weight:bold; display:flex; align-items:center; gap:6px; justify-content:flex-start;">
@@ -350,12 +335,6 @@
         });
     }
 
-
-
-
-
-
-    // EVENTO SUBMIT OPTIMIZADO: DETECTA QUÉ PARTIDOS CAMBIARON REALMENTE
     document.getElementById('formularioMundial').addEventListener('submit', function(e) {
       e.preventDefault();
       const nombre = document.getElementById('nombre').value;
@@ -369,19 +348,14 @@
         const inputG1 = fila.querySelector('.gol1-input');
         const inputG2 = fila.querySelector('.gol2-input');
         
-        // Verificar que la fila sea editable (no bloqueada)
         if (inputG1 && !inputG1.hasAttribute('disabled')) {
           const g1 = inputG1.value;
           const g2 = inputG2.value;
           
-          // Recuperamos los valores que ya existían originalmente en el Sheet
           const orig1 = inputG1.getAttribute('data-orig1') || "";
           const orig2 = inputG2.getAttribute('data-orig2') || "";
           
-          // Solo si el usuario ha completado ambos campos
           if (g1.trim() !== "" && g2.trim() !== "") {
-            
-            // CORRECCIÓN INTELIGENTE: ¿El pronóstico actual es diferente al original guardado en el Sheet?
             if (g1.trim() !== orig1.trim() || g2.trim() !== orig2.trim()) {
               resultados.push({
                 idPartido: fila.getAttribute('data-id-partido'),
@@ -395,7 +369,6 @@
         }
       });
 
-      // Si no hubo ningún cambio manual ni ingresos nuevos, detenemos el envío
       if (resultados.length === 0) { 
         alert("No has realizado ningún cambio nuevo ni rellenado pronósticos vacíos para guardar."); 
         return; 
@@ -410,7 +383,7 @@
         .then(res => {
           msg.className = "mensaje exito"; 
           msg.textContent = res.mensaje;
-          actualizarCartilla(); // Refresca y actualiza los nuevos estados originales
+          actualizarCartilla();
         }).catch(err => {
           msg.className = "mensaje";
           msg.style.backgroundColor = "#f8d7da";
@@ -418,9 +391,6 @@
           msg.textContent = "Error al conectar con el servidor.";
         });
     });
-
-
-
 
     function cambiarPestaña(tipo) {
       document.getElementById('seccionCartilla').style.display = tipo === 'cartilla' ? 'block' : 'none';
@@ -457,112 +427,103 @@
                       <strong>${p.fecha}</strong><br>
                       <span style="color:#2e7d32; font-weight:600;">${p.grupo}</span>
                     </td>
-                    <!-- Equipo 1 -->
                     <td style="text-align:right; font-weight:500;">
                       ${p.equipo1} <span style="font-size:14px; margin-left:3px; vertical-align:middle;">${obtenerBandera(p.equipo1)}</span>
                     </td>
                     <td style="text-align:center; min-width:70px;">${m}</td>
-                    <!-- Equipo 2 -->
                     <td style="text-align:left; font-weight:500;">
                       <span style="font-size:14px; margin-right:3px; vertical-align:middle;">${obtenerBandera(p.equipo2)}</span> ${p.equipo2}
                     </td>
                   </tr>`;
           });
-
-
-
-
           document.getElementById('contenedorFixture').innerHTML = h + '</tbody></table>';
         });
       }
     }
 
-
-    // FUNCIÓN PARA CARGAR LOS PRONÓSTICOS PÚBLICOS DE DANILO TORREZ
-function cargarPronosticosPublicos() {
-  const fecha = document.getElementById('fechaPartido').value;
-  const cartilla = document.getElementById('contenedorCartilla');
-  const btnGuardar = document.getElementById('btnGuardar');
-  const aviso = document.getElementById('avisoPublico');
-  
-  cartilla.innerHTML = '<p style="text-align: center; color: #666;">Cargando pronósticos públicos de Danilo Torrez...</p>';
-  btnGuardar.style.display = "none"; // Ocultar el botón guardar ya que es modo lectura
-  aviso.style.display = "block";
-
-  // Consultamos usando las credenciales públicas de Danilo (el backend debe ignorar la clave o validar esta acción pública)
-  fetch(`${URL_API}?accion=obtenerPartidos&fecha=${fecha}&usuario=${encodeURIComponent("Danilo Torrez")}&clave=PUBLICA`)
-    .then(res => res.json())
-    .then(partidos => {
-      cartilla.innerHTML = "";
+    function cargarPronosticosPublicos() {
+      const fecha = document.getElementById('fechaPartido').value;
+      const cartilla = document.getElementById('contenedorCartilla');
+      const btnGuardar = document.getElementById('btnGuardar');
+      const aviso = document.getElementById('avisoPublico');
       
-      if(partidos.length === 0) {
-        cartilla.innerHTML = '<p style="text-align:center; color:#666;">No hay partidos programados para esta fecha.</p>';
-        return;
-      }
+      cartilla.innerHTML = '<p style="text-align: center; color: #666;">Cargando pronósticos públicos de Danilo Torrez...</p>';
+      btnGuardar.style.display = "none"; 
+      aviso.style.display = "block";
 
-      // Obtener hora actual para la restricción de 10 minutos
-      const ahora = new Date();
+      fetch(`${URL_API}?accion=obtenerPartidos&fecha=${fecha}&usuario=${encodeURIComponent("Danilo Torrez")}&clave=PUBLICA`)
+        .then(res => res.json())
+        .then(partidos => {
+          cartilla.innerHTML = "";
+          
+          if(partidos.length === 0) {
+            cartilla.innerHTML = '<p style="text-align:center; color:#666;">No hay partidos programados para esta fecha.</p>';
+            return;
+          }
 
-      partidos.forEach(p => {
-        const div = document.createElement('div');
-        div.style = "background:#f0f4c3; border:1px solid #d4e157; padding:12px 10px 8px 10px; border-radius:8px; margin-bottom:12px;";
-        
-        // --- LÓGICA DE CONTROL DE TIEMPO (10 MINUTOS ANTES) ---
-        // Asumiendo que p.horario viene en formato "HH:MM" (ej. "15:00") y p.fecha en "DD/MM/AAAA"
-        const partesFecha = fecha.split('/');
-        const partesHora = p.horario.split(':');
-        // Crear objeto de fecha del partido: año, mes (0-11), día, hora, minuto
-        const fechaPartidoObj = new Date(partesFecha[2], partesFecha[1] - 1, partesFecha[0], partesHora[0], partesHora[1]);
-        
-        // Calcular la diferencia en milisegundos y pasarla a minutos
-        const diferenciaMinutos = (fechaPartidoObj - ahora) / 1000 / 60;
-        
-        let visualGoles1 = "🔒";
-        let visualGoles2 = "🔒";
-        let mensajeBloqueo = `<span style="color:#d32f2f; font-size:10px;">Oculto hasta las ${p.horario} (Faltan -10 min)</span>`;
+          const ahora = new Date();
 
-        // SI FALTAN 10 MINUTOS O MENOS, O EL PARTIDO YA COMENZÓ/PASÓ: SE LIBERAN LOS GOLES
-        if (diferenciaMinutos <= 10) {
-          visualGoles1 = p.goles1 !== "" ? p.goles1 : "-";
-          visualGoles2 = p.goles2 !== "" ? p.goles2 : "-";
-          mensajeBloqueo = `<span style="color:#388e3c; font-size:10px;">👁️ Pronóstico Liberado</span>`;
-        }
-
-        div.innerHTML = `
-          <div style="display:flex; align-items:center; justify-content:space-between;">
-            <div style="width:35%; font-size:12px; font-weight:bold; display:flex; align-items:center; gap:6px;">
-              ${obtenerBandera(p.equipo1)}
-              <span style="text-transform: uppercase;">${p.equipo1}</span>
-            </div>
+          partidos.forEach(p => {
+            const div = document.createElement('div');
+            div.style = "background:#f0f4c3; border:1px solid #d4e157; padding:12px 10px 8px 10px; border-radius:8px; margin-bottom:12px;";
             
-            <div style="width:30%; display:flex; justify-content:center; gap:8px; align-items:center;">
-              <span style="font-weight:bold; background:#fff; padding:4px 8px; border:1px solid #ccc; border-radius:4px; min-width:15px; text-align:center;">${visualGoles1}</span>
-              <span style="font-size:11px; background:#33691e; color:#fff; padding:2px 5px; border-radius:4px; font-weight:bold;">${p.horario}</span>
-              <span style="font-weight:bold; background:#fff; padding:4px 8px; border:1px solid #ccc; border-radius:4px; min-width:15px; text-align:center;">${visualGoles2}</span>
-            </div>
+            // CORRECCIÓN DE FECHA: Compatible tanto con formato AAAA-MM-DD como DD/MM/AAAA
+            let partesFecha = [];
+            if (fecha.includes("-")) {
+              partesFecha = fecha.split("-"); // [AAAA, MM, DD]
+            } else {
+              partesFecha = fecha.split("/"); // [DD, MM, AAAA]
+            }
+
+            const partesHora = p.horario.split(':');
+            let fechaPartidoObj;
             
-            <div style="width:35%; text-align:right; font-size:12px; font-weight:bold; display:flex; align-items:center; justify-content:flex-end; gap:6px;">
-              <span style="text-transform: uppercase;">${p.equipo2}</span>
-              ${obtenerBandera(p.equipo2)}
-            </div>
-          </div>
-          <div style="text-align:center; margin-top:5px; border-top:1px dashed #d4e157; padding-top:4px;">
-            ${mensajeBloqueo}
-          </div>
-        `;
-        
-        cartilla.appendChild(div);
-      });
-    }).catch(err => {
-      cartilla.innerHTML = '<p style="text-align:center; color:red;">Error al cargar los datos públicos.</p>';
-    });
-}
+            if (partesFecha[0].length === 4) {
+              fechaPartidoObj = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2], partesHora[0], partesHora[1]);
+            } else {
+              fechaPartidoObj = new Date(partesFecha[2], partesFecha[1] - 1, partesFecha[0], partesHora[0], partesHora[1]);
+            }
+            
+            const diferenciaMinutos = (fechaPartidoObj - ahora) / 1000 / 60;
+            
+            let visualGoles1 = "🔒";
+            let visualGoles2 = "🔒";
+            let mensajeBloqueo = `<span style="color:#d32f2f; font-size:10px;">Oculto hasta las ${p.horario} (Faltan -10 min)</span>`;
 
+            if (diferenciaMinutos <= 10) {
+              visualGoles1 = p.goles1 !== "" ? p.goles1 : "-";
+              visualGoles2 = p.goles2 !== "" ? p.goles2 : "-";
+              mensajeBloqueo = `<span style="color:#388e3c; font-size:10px;">👁️ Pronóstico Liberado</span>`;
+            }
 
-
+            div.innerHTML = `
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div style="width:35%; font-size:12px; font-weight:bold; display:flex; align-items:center; gap:6px;">
+                  ${obtenerBandera(p.equipo1)}
+                  <span style="text-transform: uppercase;">${p.equipo1}</span>
+                </div>
+                
+                <div style="width:30%; display:flex; justify-content:center; gap:8px; align-items:center;">
+                  <span style="font-weight:bold; background:#fff; padding:4px 8px; border:1px solid #ccc; border-radius:4px; min-width:15px; text-align:center;">${visualGoles1}</span>
+                  <span style="font-size:11px; background:#33691e; color:#fff; padding:2px 5px; border-radius:4px; font-weight:bold;">${p.horario}</span>
+                  <span style="font-weight:bold; background:#fff; padding:4px 8px; border:1px solid #ccc; border-radius:4px; min-width:15px; text-align:center;">${visualGoles2}</span>
+                </div>
+                
+                <div style="width:35%; text-align:right; font-size:12px; font-weight:bold; display:flex; align-items:center; justify-content:flex-end; gap:6px;">
+                  <span style="text-transform: uppercase;">${p.equipo2}</span>
+                  ${obtenerBandera(p.equipo2)}
+                </div>
+              </div>
+              <div style="text-align:center; margin-top:5px; border-top:1px dashed #d4e157; padding-top:4px;">
+                ${mensajeBloqueo}
+              </div>
+            `;
+            cartilla.appendChild(div);
+          });
+        }).catch(err => {
+          cartilla.innerHTML = '<p style="text-align:center; color:red;">Error al cargar los datos públicos.</p>';
+        });
+    }
   </script>
-
-
-
 </body>
 </html>
