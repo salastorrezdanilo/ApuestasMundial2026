@@ -81,14 +81,13 @@
 
         <hr style="border: 0; border-top: 1px dashed #ccc; margin: 20px 0;">
         
-        <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
-          <span style="font-size: 13px; color: #1b5e20; font-weight: bold; display: block; margin-bottom: 5px;">👀 Modo Espiar Pronósticos Públicos</span>
-          <button type="button" id="btnVerDanilo" onclick="cargarPronosticosPublicos()" style="background: #2e7d32; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold;">
-            Ver Pronósticos de Danilo Torrez
-          </button>
-          <p id="avisoPublico" style="font-size: 11px; color: #555; margin: 4px 0 0 0; display: none;">
-            *Nota: Los resultados se liberan estrictamente 10 minutos antes de cada partido.
-          </p>
+        <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+          <span style="font-size: 14px; color: #1a472a; font-weight: bold; display: block; text-align: center; margin-bottom: 10px;">
+            📊 Pronósticos en Vivo del Día (Todos los Jugadores)
+          </span>
+          <div id="tableroEnvivo" style="font-size: 13px; color: #333;">
+            <p style="text-align: center; color: #777; margin: 5px 0; font-style: italic;">Selecciona una fecha para cargar el tablero.</p>
+          </div>
         </div>
 
         <div id="contenedorCartilla">
@@ -110,7 +109,7 @@
   </div>
 
   <script>
-    const URL_API = "https://script.google.com/macros/s/AKfycbx_bzFC74dVuAYkV63CtBojPxrjx6GpFxzGNF_8xq26r5oZ_Xpz8UDPzgp2hBmrRxQv/exec";
+    const URL_API = "https://script.google.com/macros/s/AKfycbzDDipS-gMojUiI-OmT27ERFqvr22gnYqFyDMB7peiwgOGmK4bzA1BQyeOLr1JhD-pB/exec";
 
     // FUNCIÓN DE BANDERAS ULTRA-NÍTIDAS (HD)
     function obtenerBandera(pais) {
@@ -167,6 +166,10 @@
             let opt = document.createElement('option');
             opt.value = p; opt.textContent = p; select.appendChild(opt);
           });
+          // Forzar la ejecución del tablero en vivo con la fecha inicial asignada por defecto
+          if (selectorFecha.value) {
+            cargarTableroEnVivo(selectorFecha.value);
+          }
         }).catch((err) => {
           console.error(err);
           document.getElementById('nombre').innerHTML = '<option value="" disabled>Error de conexión</option>';
@@ -260,6 +263,11 @@
       const btnGuardar = document.getElementById('btnGuardar');
       const sf = document.getElementById('fechaPartido');
 
+      // DISPARADOR DEL TABLERO EN VIVO AUTOMÁTICO AL CAMBIAR FECHAS
+      if (fecha) {
+        cargarTableroEnVivo(fecha);
+      }
+
       if (!nombre || !clave) return;
 
       cartilla.innerHTML = '<p style="text-align: center; color: #666;">Validando credenciales...</p>';
@@ -309,221 +317,3 @@
             
             div.innerHTML = `
               <div style="display:flex; align-items:center; justify-content:space-between;">
-                <div style="width:35%; font-size:12px; font-weight:bold; display:flex; align-items:center; gap:6px; justify-content:flex-start;">
-                  ${obtenerBandera(p.equipo1)}
-                  <span style="text-transform: uppercase;">${p.equipo1}</span>
-                </div>
-                
-                <div style="width:30%; display:flex; justify-content:center; gap:5px; align-items:center;">
-                  <input type="hidden" class="eq1-hidden" value="${p.equipo1}">
-                  <input type="number" class="gol1-input" min="0" placeholder="-" value="${p.goles1}" data-orig1="${p.goles1}" ${dis} style="width:35px; text-align:center; font-weight:bold;">
-                  <span style="font-size:11px; background:#1a472a; color:#fff; padding:2px 5px; border-radius:4px; font-weight:bold; white-space:nowrap;">${p.horario}</span>
-                  <input type="number" class="gol2-input" min="0" placeholder="-" value="${p.goles2}" data-orig2="${p.goles2}" ${dis} style="width:35px; text-align:center; font-weight:bold;">
-                  <input type="hidden" class="eq2-hidden" value="${p.equipo2}">
-                </div>
-                
-                <div style="width:35%; text-align:right; font-size:12px; font-weight:bold; display:flex; align-items:center; justify-content:flex-end; gap:6px;">
-                  <span style="text-transform: uppercase;">${p.equipo2}</span>
-                  ${obtenerBandera(p.equipo2)}
-                </div>
-              </div>
-              ${htmlInfoTiempo}`;
-              
-            cartilla.appendChild(div);
-          });
-          btnGuardar.style.display = "block";
-        });
-    }
-
-    document.getElementById('formularioMundial').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const nombre = document.getElementById('nombre').value;
-      const clave = document.getElementById('clave').value;
-      const fecha = document.getElementById('fechaPartido').value;
-      const msg = document.getElementById('mensaje');
-      
-      let resultados = [];
-      
-      document.querySelectorAll('.partido-fila-contenedor').forEach(fila => {
-        const inputG1 = fila.querySelector('.gol1-input');
-        const inputG2 = fila.querySelector('.gol2-input');
-        
-        if (inputG1 && !inputG1.hasAttribute('disabled')) {
-          const g1 = inputG1.value;
-          const g2 = inputG2.value;
-          
-          const orig1 = inputG1.getAttribute('data-orig1') || "";
-          const orig2 = inputG2.getAttribute('data-orig2') || "";
-          
-          if (g1.trim() !== "" && g2.trim() !== "") {
-            if (g1.trim() !== orig1.trim() || g2.trim() !== orig2.trim()) {
-              resultados.push({
-                idPartido: fila.getAttribute('data-id-partido'),
-                equipo1: fila.querySelector('.eq1-hidden').value,
-                goles1: g1, 
-                goles2: g2,
-                equipo2: fila.querySelector('.eq2-hidden').value
-              });
-            }
-          }
-        }
-      });
-
-      if (resultados.length === 0) { 
-        alert("No has realizado ningún cambio nuevo ni rellenado pronósticos vacíos para guardar."); 
-        return; 
-      }
-
-      msg.className = "mensaje carga"; 
-      msg.style.display = "block"; 
-      msg.textContent = "Guardando únicamente tus cambios nuevos...";
-
-      fetch(`${URL_API}?accion=registrarGoles&usuario=${encodeURIComponent(nombre)}&clave=${encodeURIComponent(clave)}&fecha=${fecha}&resultados=${encodeURIComponent(JSON.stringify(resultados))}`)
-        .then(res => res.json())
-        .then(res => {
-          msg.className = "mensaje exito"; 
-          msg.textContent = res.mensaje;
-          actualizarCartilla();
-        }).catch(err => {
-          msg.className = "mensaje";
-          msg.style.backgroundColor = "#f8d7da";
-          msg.style.color = "#721c24";
-          msg.textContent = "Error al conectar con el servidor.";
-        });
-    });
-
-    function cambiarPestaña(tipo) {
-      document.getElementById('seccionCartilla').style.display = tipo === 'cartilla' ? 'block' : 'none';
-      document.getElementById('seccionPosiciones').style.display = tipo === 'posiciones' ? 'block' : 'none';
-      document.getElementById('seccionFixture').style.display = tipo === 'fixture' ? 'block' : 'none';
-      document.getElementById('mensaje').style.display = "none";
-      
-      document.getElementById('tabCartillaBtn').classList.remove('active');
-      document.getElementById('tabPosicionesBtn').classList.remove('active');
-      document.getElementById('tabFixtureBtn').classList.remove('active');
-      
-      if (tipo === 'cartilla') document.getElementById('tabCartillaBtn').classList.add('active');
-      if (tipo === 'posiciones') document.getElementById('tabPosicionesBtn').classList.add('active');
-      if (tipo === 'fixture') document.getElementById('tabFixtureBtn').classList.add('active');
-      
-      if(tipo === 'posiciones') {
-        document.getElementById('contenedorTabla').innerHTML = "<p style='text-align:center;'>Procesando puntuaciones...</p>";
-        fetch(`${URL_API}?accion=obtenerPosiciones`).then(r=>r.json()).then(tabla => {
-          let h = '<table class="tabla-ranking"><thead><tr><th>Pos</th><th>Usuario</th><th>Pts</th></tr></thead><tbody>';
-          tabla.forEach((f,i) => { h += `<tr><td>#${i+1}</td><td><b>${f.nombre}</b></td><td>${f.puntos} pts</td></tr>`; });
-          document.getElementById('contenedorTabla').innerHTML = h + '</tbody></table>';
-        });
-      }
-      
-      if(tipo === 'fixture') {
-        document.getElementById('contenedorFixture').innerHTML = "<p style='text-align:center;'>Cargando base oficial...</p>";
-        fetch(`${URL_API}?accion=obtenerFixture`).then(r=>r.json()).then(partidos => {
-          let h = '<table class="tabla-fixture"><tbody>';
-          
-          partidos.forEach(p => {
-            let m = (p.golesReal1===""||p.golesReal2==="") ? `<span class="marcador-pendiente-badge">${p.horario}</span>` : `<span class="marcador-real-badge">${p.golesReal1} - ${p.golesReal2}</span>`;
-            h += `<tr>
-                    <td style="font-size:11px; color:#555; line-height:1.2;">
-                      <strong>${p.fecha}</strong><br>
-                      <span style="color:#2e7d32; font-weight:600;">${p.grupo}</span>
-                    </td>
-                    <td style="text-align:right; font-weight:500;">
-                      ${p.equipo1} <span style="font-size:14px; margin-left:3px; vertical-align:middle;">${obtenerBandera(p.equipo1)}</span>
-                    </td>
-                    <td style="text-align:center; min-width:70px;">${m}</td>
-                    <td style="text-align:left; font-weight:500;">
-                      <span style="font-size:14px; margin-right:3px; vertical-align:middle;">${obtenerBandera(p.equipo2)}</span> ${p.equipo2}
-                    </td>
-                  </tr>`;
-          });
-          document.getElementById('contenedorFixture').innerHTML = h + '</tbody></table>';
-        });
-      }
-    }
-
-    function cargarPronosticosPublicos() {
-      const fecha = document.getElementById('fechaPartido').value;
-      const cartilla = document.getElementById('contenedorCartilla');
-      const btnGuardar = document.getElementById('btnGuardar');
-      const aviso = document.getElementById('avisoPublico');
-      
-      cartilla.innerHTML = '<p style="text-align: center; color: #666;">Cargando pronósticos públicos de Danilo Torrez...</p>';
-      btnGuardar.style.display = "none"; 
-      aviso.style.display = "block";
-
-      fetch(`${URL_API}?accion=obtenerPartidos&fecha=${fecha}&usuario=${encodeURIComponent("Danilo Torrez")}&clave=PUBLICA`)
-        .then(res => res.json())
-        .then(partidos => {
-          cartilla.innerHTML = "";
-          
-          if(partidos.length === 0) {
-            cartilla.innerHTML = '<p style="text-align:center; color:#666;">No hay partidos programados para esta fecha.</p>';
-            return;
-          }
-
-          const ahora = new Date();
-
-          partidos.forEach(p => {
-            const div = document.createElement('div');
-            div.style = "background:#f0f4c3; border:1px solid #d4e157; padding:12px 10px 8px 10px; border-radius:8px; margin-bottom:12px;";
-            
-            // CORRECCIÓN DE FECHA: Compatible tanto con formato AAAA-MM-DD como DD/MM/AAAA
-            let partesFecha = [];
-            if (fecha.includes("-")) {
-              partesFecha = fecha.split("-"); // [AAAA, MM, DD]
-            } else {
-              partesFecha = fecha.split("/"); // [DD, MM, AAAA]
-            }
-
-            const partesHora = p.horario.split(':');
-            let fechaPartidoObj;
-            
-            if (partesFecha[0].length === 4) {
-              fechaPartidoObj = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2], partesHora[0], partesHora[1]);
-            } else {
-              fechaPartidoObj = new Date(partesFecha[2], partesFecha[1] - 1, partesFecha[0], partesHora[0], partesHora[1]);
-            }
-            
-            const diferenciaMinutos = (fechaPartidoObj - ahora) / 1000 / 60;
-            
-            let visualGoles1 = "🔒";
-            let visualGoles2 = "🔒";
-            let mensajeBloqueo = `<span style="color:#d32f2f; font-size:10px;">Oculto hasta las ${p.horario} (Faltan -10 min)</span>`;
-
-            if (diferenciaMinutos <= 10) {
-              visualGoles1 = p.goles1 !== "" ? p.goles1 : "-";
-              visualGoles2 = p.goles2 !== "" ? p.goles2 : "-";
-              mensajeBloqueo = `<span style="color:#388e3c; font-size:10px;">👁️ Pronóstico Liberado</span>`;
-            }
-
-            div.innerHTML = `
-              <div style="display:flex; align-items:center; justify-content:space-between;">
-                <div style="width:35%; font-size:12px; font-weight:bold; display:flex; align-items:center; gap:6px;">
-                  ${obtenerBandera(p.equipo1)}
-                  <span style="text-transform: uppercase;">${p.equipo1}</span>
-                </div>
-                
-                <div style="width:30%; display:flex; justify-content:center; gap:8px; align-items:center;">
-                  <span style="font-weight:bold; background:#fff; padding:4px 8px; border:1px solid #ccc; border-radius:4px; min-width:15px; text-align:center;">${visualGoles1}</span>
-                  <span style="font-size:11px; background:#33691e; color:#fff; padding:2px 5px; border-radius:4px; font-weight:bold;">${p.horario}</span>
-                  <span style="font-weight:bold; background:#fff; padding:4px 8px; border:1px solid #ccc; border-radius:4px; min-width:15px; text-align:center;">${visualGoles2}</span>
-                </div>
-                
-                <div style="width:35%; text-align:right; font-size:12px; font-weight:bold; display:flex; align-items:center; justify-content:flex-end; gap:6px;">
-                  <span style="text-transform: uppercase;">${p.equipo2}</span>
-                  ${obtenerBandera(p.equipo2)}
-                </div>
-              </div>
-              <div style="text-align:center; margin-top:5px; border-top:1px dashed #d4e157; padding-top:4px;">
-                ${mensajeBloqueo}
-              </div>
-            `;
-            cartilla.appendChild(div);
-          });
-        }).catch(err => {
-          cartilla.innerHTML = '<p style="text-align:center; color:red;">Error al cargar los datos públicos.</p>';
-        });
-    }
-  </script>
-</body>
-</html>
