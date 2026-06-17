@@ -3,247 +3,375 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fixture de Pronósticos</title>
+  <title>🏆 Apuestas Mundial 2026 🏆</title>
   <style>
-    /* Mantenemos tus estilos exactamente iguales */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      margin: 0;
-      padding: 20px;
-    }
-    .panel {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .partido-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-    .input-goles {
-      width: 40px;
-      text-align: center;
-    }
-    .bloqueado {
-      background-color: #e0e0e0;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background-color: #007bff;
-      color: white;
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f5; margin: 0; padding: 10px; color: #333; }
+    .form-container { max-width: 500px; margin: 0 auto; background: #ffffff; padding: 20px 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+    h2 { text-align: center; color: #1a472a; margin-bottom: 20px; font-size: 22px; }
+    .tabs-container { display: flex; gap: 5px; margin-bottom: 20px; background: #eee; padding: 4px; border-radius: 8px; }
+    .tab-btn { flex: 1; padding: 10px 5px; font-size: 12px; font-weight: bold; cursor: pointer; background: transparent; color: #555; border: none; border-radius: 6px; transition: all 0.2s; text-align: center; }
+    .tab-btn.active { background: #1a472a; color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+    .campo { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #444; }
+    select, input[type="date"], input[type="password"] { width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; outline: none; }
+    button { width: 100%; padding: 12px; background-color: #1a472a; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; }
+    button:disabled { background-color: #cccccc; cursor: not-allowed; }
+    .mensaje { margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; font-weight: 500; font-size: 14px; display: none; }
+    .mensaje.carga { background-color: #e2e3e5; color: #383d41; }
+    .mensaje.exito { background-color: #d4edda; color: #155724; }
+    .tabla-ranking, .tabla-fixture { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; font-size: 14px; }
+    .tabla-ranking th, .tabla-fixture th { background-color: #1a472a; color: white; padding: 10px; text-align: left; }
+    .tabla-ranking td, .tabla-fixture td { padding: 10px; border-bottom: 1px solid #eee; }
+    .marcador-real-badge { background: #1a472a; color: #fff; padding: 3px 8px; border-radius: 12px; font-weight: bold; font-size: 12px; }
+    .marcador-pendiente-badge { background: #fff3cd; color: #856404; padding: 3px 6px; border-radius: 12px; font-size: 11px; border: 1px solid #ffeeba; }
   </style>
 </head>
 <body>
 
-  <div id="panel-login" class="panel">
-    <h2>Ingreso al Sistema</h2>
-    <select id="select-usuario">
-      <option value="">Cargando participantes...</option>
-    </select>
-    <input type="password" id="input-clave" placeholder="Contraseña">
-    <button onclick="loginUsuario()">Ingresar</button>
-    <div id="msg-login"></div>
-  </div>
+  <div class="form-container">
+    <h2>🏆 Apuestas Mundial 2026 🏆</h2>
+    
+    <div class="tabs-container">
+      <button type="button" id="tabCartillaBtn" class="tab-btn active" onclick="cambiarPestaña('cartilla')">Pronósticos</button>
+      <button type="button" id="tabPosicionesBtn" class="tab-btn" onclick="cambiarPestaña('posiciones')">Tabla de Posiciones</button>
+      <button type="button" id="tabFixtureBtn" class="tab-btn" onclick="cambiarPestaña('fixture')">Resultados Reales</button>
+    </div>
+    
+    <div id="seccionCartilla">
+      <form id="formularioMundial">
+        <div class="campo">
+          <label for="nombre">Tu Nombre:</label>
+          <select id="nombre" name="nombre" required onchange="manejarCambioUsuario()">
+            <option value="" disabled selected>Cargando participantes...</option>
+          </select>
+        </div>
 
-  <div id="panel-pronosticos" class="panel" style="display: none;">
-    <h2>Mis Pronósticos del Día</h2>
-    <input type="date" id="fecha-pronosticos" onchange="cargarPartidosUsuario()">
-    <div id="contenedor-partidos-usuario"></div>
-    <button id="btn-guardar-goles" onclick="guardarMisPronosticos()">Guardar Pronósticos</button>
-    <div id="msg-pronosticos"></div>
-  </div>
+        <div class="campo" id="bloqueClave" style="display: none;">
+          <label for="clave">Tu Clave Personal:</label>
+          <input type="password" id="clave" name="clave" placeholder="Introduce tu contraseña">
+          
+          <div style="text-align: right; margin-top: 5px;">
+            <button type="button" onclick="alternarPanelNuevaClave()" style="background: none; color: #1a472a; border: none; padding: 0; font-size: 12px; cursor: pointer; text-decoration: underline; width: auto; font-weight: normal;">
+              🔑 Cambiar contraseña
+            </button>
+          </div>
+        </div>
 
-  <div id="panel-tablero-vivo" class="panel">
-    <h2>Tablero en Vivo - Pronósticos del Grupo</h2>
-    <input type="date" id="fecha-tablero" onchange="cargarTableroGrupal()">
-    <div id="contenedor-tablero-general"></div>
-  </div>
+        <div class="campo" id="panelNuevaClave" style="display: none; background: #f9f9f9; border: 1px solid #ddd; padding: 12px; border-radius: 6px; margin-top: 10px;">
+          <label for="nuevaClave" style="font-size: 13px;">Nueva Contraseña:</label>
+          <input type="password" id="nuevaClave" placeholder="Escribe tu nueva clave" style="margin-bottom: 10px;">
+          <button type="button" onclick="procesarCambioClave()" style="padding: 8px; font-size: 13px; background-color: #2e7d32;">
+            Confirmar Nueva Contraseña
+          </button>
+        </div>
 
-  <div id="panel-posiciones" class="panel">
-    <h2>Tabla de Posiciones</h2>
-    <div id="contenedor-tabla-posiciones"></div>
-  </div>
+        <div class="campo">
+          <label for="fechaPartido">Fecha de Partidos:</label>
+          <input type="date" id="fechaPartido" name="fechaPartido" required disabled onchange="actualizarCartilla()" style="background-color: #f0f0f0; cursor: not-allowed;">
+        </div>
 
+        <hr style="border: 0; border-top: 1px dashed #ccc; margin: 20px 0;">
+        
+        <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+          <span style="font-size: 14px; color: #1a472a; font-weight: bold; display: block; text-align: center; margin-bottom: 10px;">
+            📊 Pronósticos en Vivo del Día (Todos los Jugadores)
+          </span>
+          <div id="tableroEnvivo" style="font-size: 13px; color: #333;">
+            <p style="text-align: center; color: #777; margin: 5px 0; font-style: italic;">Selecciona una fecha para cargar el tablero.</p>
+          </div>
+        </div>
+
+        <div id="contenedorCartilla">
+          <p id="textoGuiaCartilla" style="text-align: center; color: #999; font-style: italic;">Por favor, selecciona tu nombre para continuar.</p>
+        </div>
+        <button type="submit" id="btnGuardar" style="display:none; margin-top: 20px;">Guardar Pronósticos</button>
+      </form>
+    </div>
+    
+    <div id="seccionPosiciones" style="display: none;">
+      <div id="contenedorTabla"><p style="text-align: center;">Cargando tabla...</p></div>
+    </div>
+
+    <div id="seccionFixture" style="display: none;">
+      <div id="contenedorFixture"><p style="text-align: center;">Cargando partidos...</p></div>
+    </div>
+
+    <div id="mensaje" class="mensaje"></div>
+  </div>
 
   <script>
-    const WEB_APP_URL = "SU_URL_DE_APPS_SCRIPT_AQUI"; 
-    let usuarioLogueado = "";
-    let claveLogueada = "";
+    const URL_API = "https://script.google.com/macros/s/AKfycbzP6eyHSVlxANpWVd2nlwNZMI6Gz-JdGjouF_UQYsjV5w0d3u1Tr3zWi0ZOoKr6RQpt/exec";
 
-    document.addEventListener("DOMContentLoaded", function() {
-      cargarListaUsuarios();
-      cargarTableroGrupal();
-      cargarTablaPosiciones();
+    // GENERADOR DINÁMICO DE BANDERAS
+    function obtenerBandera(pais) {
+      if (!pais) return "";
+      const nombre = pais.toLowerCase().trim();
+      const codigosISO = {
+        "méxico": "mx", "mexico": "mx", "sudáfrica": "za", "sudafrica": "za",
+        "corea del sur": "kr", "rep. checa": "cz", "republica checa": "cz",
+        "canadá": "ca", "canada": "ca", "bosnia y herzeg.": "ba", "bosnia": "ba",
+        "estados unidos": "us", "eeuu": "us", "paraguay": "py", "catar": "qa", "qatar": "qa", 
+        "suiza": "ch", "brasil": "br", "marruecos": "ma", "haití": "ht", "haiti": "ht", 
+        "escocia": "gb-sct", "australia": "au", "turquía": "tr", "turquia": "tr",
+        "alemania": "de", "curazao": "cw", "países bajos": "nl", "holanda": "nl", 
+        "japón": "jp", "japon": "jp", "costa de marfil": "ci", "ecuador": "ec",
+        "suecia": "se", "túnez": "tn", "tunez": "tn", "españa": "es", "espana": "es", 
+        "cabo verde": "cv", "bélgica": "be", "belgica": "be", "egipto": "eg",
+        "arabia saudita": "sa", "uruguay": "uy", "irán": "ir", "iran": "ir", 
+        "nueva zelanda": "nz", "francia": "fr", "senegal": "sn", "irak": "iq", 
+        "noruega": "no", "argentina": "ar", "argelia": "dz", "austria": "at", 
+        "jordania": "jo", "portugal": "pt", "inglaterra": "gb-eng", "croacia": "hr",
+        "ghana": "gh", "panamá": "pa", "panama": "pa", "uzbekistán": "uz", "colombia": "co"
+      };
+      const codigo = codigosISO[nombre];
+      if (!codigo) return `<img src="https://flagcdn.com/w40/un.png" style="height: 13px; width: 18px; object-fit: cover; border: 1px solid #ccc; vertical-align: middle;" alt="icon">`;
+      return `<img src="https://flagcdn.com/w40/${codigo}.png" style="height: 13px; width: 18px; object-fit: cover; border: 1px solid #ccc; vertical-align: middle;" alt="${nombre}">`;
+    }
+
+    // CARGA INICIAL
+    window.addEventListener('DOMContentLoaded', () => {
+      const selectorFecha = document.getElementById('fechaPartido');
+      const hoy = new Date();
+      selectorFecha.value = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+      
+      fetch(`${URL_API}?accion=obtenerParticipantes`)
+        .then(res => res.json())
+        .then(datos => {
+          const select = document.getElementById('nombre');
+          select.innerHTML = '<option value="" disabled selected>-- Selecciona tu nombre --</option>';
+          if(datos.error) throw new Error(datos.error);
+          datos.forEach(p => {
+            let opt = document.createElement('option');
+            opt.value = p; opt.textContent = p; select.appendChild(opt);
+          });
+          if (selectorFecha.value) cargarTableroEnVivo(selectorFecha.value);
+        }).catch((err) => {
+          console.error(err);
+          document.getElementById('nombre').innerHTML = '<option value="" disabled>Error de conexión</option>';
+        });
     });
 
-    function cargarListaUsuarios() {
-      fetch(`${WEB_APP_URL}?accion=obtenerParticipantes`)
-        .then(res => res.json())
-        .then(data => {
-          const select = document.getElementById("select-usuario");
-          select.innerHTML = '<option value="">-- Selecciona Usuario --</option>';
-          if (Array.isArray(data)) {
-            data.forEach(user => {
-              const option = document.createElement("option");
-              option.value = user;
-              option.textContent = user;
-              select.appendChild(option);
-            });
-          }
-        });
-    }
+    // RENDERIZADO DEL TABLERO EN VIVO (MUESTRA A TODOS)
+    function cargarTableroEnVivo(fecha) {
+      const contenedorTablero = document.getElementById('tableroEnvivo');
+      if (!contenedorTablero) return;
+      contenedorTablero.innerHTML = '<p style="text-align: center; color: #777; margin: 5px 0; font-style: italic;">Cargando pronósticos generales...</p>';
 
-    function loginUsuario() {
-      const usuario = document.getElementById("select-usuario").value;
-      const clave = document.getElementById("input-clave").value;
-      const msg = document.getElementById("msg-login");
-
-      fetch(`${WEB_APP_URL}?accion=verificarClave&usuario=${encodeURIComponent(usuario)}&clave=${encodeURIComponent(clave)}`)
-        .then(res => res.json())
-        .then(esValido => {
-          if (esValido === true) {
-            usuarioLogueado = usuario;
-            claveLogueada = clave;
-            msg.innerHTML = "<p style='color:green;'>Acceso correcto</p>";
-            document.getElementById("panel-pronosticos").style.display = "block";
-            cargarPartidosUsuario();
-          } else {
-            msg.innerHTML = "<p style='color:red;'>Clave incorrecta</p>";
-          }
-        });
-    }
-
-    function cargarPartidosUsuario() {
-      if (!usuarioLogueado) return;
-      const fecha = document.getElementById("fecha-pronosticos").value;
-      const contenedor = document.getElementById("contenedor-partidos-usuario");
-
-      fetch(`${WEB_APP_URL}?accion=obtenerPartidos&fecha=${fecha}&usuario=${encodeURIComponent(usuarioLogueado)}&clave=${encodeURIComponent(claveLogueada)}`)
+      fetch(`${URL_API}?accion=obtenerApuestasDelDia&fecha=${fecha}`)
         .then(res => res.json())
         .then(partidos => {
           if (partidos.error) {
-            contenedor.innerHTML = `<p style='color:red;'>${partidos.error}</p>`;
+            contenedorTablero.innerHTML = `<p style="text-align: center; color: red; margin: 5px 0;">Error al cargar datos públicos.</p>`;
             return;
           }
-          contenedor.innerHTML = "";
           if (partidos.length === 0) {
-            contenedor.innerHTML = "<p>No hay partidos para esta fecha.</p>";
+            contenedorTablero.innerHTML = '<p style="text-align: center; color: #777; margin: 5px 0; font-style: italic;">No hay partidos programados para esta fecha.</p>';
             return;
           }
 
+          let htmlTablero = '';
           partidos.forEach(p => {
-            const item = document.createElement("div");
-            item.className = `partido-item ${p.bloqueado ? 'bloqueado' : ''}`;
-            item.innerHTML = `
-              <span>${p.equipo1}</span>
-              <input type="number" class="input-goles" id="goles1-${p.id}" value="${p.goles1}" ${p.bloqueado ? 'disabled' : ''}>
-              <span>vs</span>
-              <input type="number" class="input-goles" id="goles2-${p.id}" value="${p.goles2}" ${p.bloqueado ? 'disabled' : ''}>
-              <span>${p.equipo2}</span>
-              <span style="font-size:11px; color:gray;">(${p.horario})</span>
-            `;
-            contenedor.appendChild(item);
+            htmlTablero += `<div style="margin-bottom: 12px; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
+                              <div style="font-weight: bold; text-align: center; margin-bottom: 6px; color: #1a472a; font-size: 11px;">
+                                ${obtenerBandera(p.equipo1)} ${p.equipo1} vs ${p.equipo2} ${obtenerBandera(p.equipo2)} (${p.horario})
+                              </div>
+                              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; font-size: 11px;">`;
+            
+            p.pronosticos.forEach(pr => {
+              htmlTablero += `  <div style="background: #f4f7f5; padding: 4px 6px; border-radius: 4px; display: flex; justify-content: space-between;">
+                                  <span style="color:#555;">${pr.nombre}:</span>
+                                  <strong style="color:#1a472a;">${pr.goles1} - ${pr.goles2}</strong>
+                                </div>`;
+            });
+            htmlTablero += `  </div></div>`;
           });
+          contenedorTablero.innerHTML = htmlTablero;
+        })
+        .catch(err => {
+          console.error(err);
+          contenedorTablero.innerHTML = `<p style="text-align: center; color: red; margin: 5px 0;">Error de conexión en el tablero.</p>`;
         });
     }
 
-    function guardarMisPronosticos() {
-      const fecha = document.getElementById("fecha-pronosticos").value;
-      const inputsGoles = document.querySelectorAll("#contenedor-partidos-usuario .partido-item");
-      const resultados = [];
+    // MANEJO DE PESTAÑAS
+    function cambiarPestaña(pestaña) {
+      document.getElementById('seccionCartilla').style.display = 'none';
+      document.getElementById('seccionPosiciones').style.display = 'none';
+      document.getElementById('seccionFixture').style.display = 'none';
+      document.getElementById('tabCartillaBtn').classList.remove('active');
+      document.getElementById('tabPosicionesBtn').classList.remove('active');
+      document.getElementById('tabFixtureBtn').classList.remove('active');
+      
+      if (pestaña === 'cartilla') {
+        document.getElementById('seccionCartilla').style.display = 'block';
+        document.getElementById('tabCartillaBtn').classList.add('active');
+      } else if (pestaña === 'posiciones') {
+        document.getElementById('seccionPosiciones').style.display = 'block';
+        document.getElementById('tabPosicionesBtn').classList.add('active');
+        cargarTablaPosicionesReal();
+      } else if (pestaña === 'fixture') {
+        document.getElementById('seccionFixture').style.display = 'block';
+        document.getElementById('tabFixtureBtn').classList.add('active');
+        cargarResultadosReales();
+      }
+    }
 
-      inputsGoles.forEach(item => {
-        const idInput = item.querySelector(".input-goles").id;
-        const idPartido = idInput.split("-")[1];
-        const g1 = document.getElementById(`goles1-${idPartido}`).value;
-        const g2 = document.getElementById(`goles2-${idPartido}`).value;
-        const eq1 = item.querySelectorAll("span")[0].innerText;
-        const eq2 = item.querySelectorAll("span")[1].innerText;
+    function cargarTablaPosicionesReal() {
+      const contenedor = document.getElementById('contenedorTabla');
+      contenedor.innerHTML = '<p style="text-align: center;">Cargando tabla...</p>';
+      fetch(`${URL_API}?accion=obtenerPosiciones`)
+        .then(res => res.json())
+        .then(datos => {
+          if(datos.error) throw new Error(datos.error);
+          let html = `<table class="tabla-ranking"><thead><tr><th>Pos.</th><th>Participante</th><th>Puntos</th></tr></thead><tbody>`;
+          datos.forEach((p, idx) => {
+            html += `<tr><td><strong>#${idx + 1}</strong></td><td>${p.nombre}</td><td><strong>${p.puntos} pts</strong></td></tr>`;
+          });
+          html += '</tbody></table>';
+          contenedor.innerHTML = html;
+        }).catch(() => { contenedor.innerHTML = '<p style="text-align: center; color: red;">Error al cargar la tabla.</p>'; });
+    }
 
-        if (g1 !== "" && g2 !== "" && !item.classList.contains("bloqueado")) {
-          resultados.push({ idPartido: idPartido, equipo1: eq1, goles1: g1, goles2: g2, equipo2: eq2 });
+    function cargarResultadosReales() {
+      const contenedor = document.getElementById('contenedorFixture');
+      contenedor.innerHTML = '<p style="text-align: center;">Cargando partidos...</p>';
+      fetch(`${URL_API}?accion=obtenerFixture`)
+        .then(res => res.json())
+        .then(datos => {
+          if(datos.error) throw new Error(datos.error);
+          if(datos.length === 0) { contenedor.innerHTML = '<p style="text-align: center;">No hay partidos.</p>'; return; }
+          let html = `<table class="tabla-fixture"><thead><tr><th>Partido</th><th>Resultado Real</th></tr></thead><tbody>`;
+          datos.forEach(f => {
+            let marcador = (f.golesReal1 !== "" && f.golesReal2 !== "") 
+              ? `<span class="marcador-real-badge">${f.golesReal1} - ${f.golesReal2}</span>`
+              : `<span class="marcador-pendiente-badge">Pendiente</span>`;
+            html += `<tr><td style="font-size: 12px;"><small style="color:#777;">${f.fecha} - ${f.horario}</small><br>${obtenerBandera(f.equipo1)} ${f.equipo1} vs ${f.equipo2} ${obtenerBandera(f.equipo2)}</td><td style="text-align: center;">${marcador}</td></tr>`;
+          });
+          html += '</tbody></table>';
+          contenedor.innerHTML = html;
+        }).catch(() => { contenedor.innerHTML = '<p style="text-align: center; color: red;">Error al cargar los resultados reales.</p>'; });
+    }
+
+    function manejarCambioUsuario() {
+      document.getElementById('bloqueClave').style.display = "block";
+      document.getElementById('clave').value = "";
+      document.getElementById('panelNuevaClave').style.display = "none";
+      bloquearFiltrosYCartilla("Por favor, introduce tu contraseña.");
+    }
+
+    function alternarPanelNuevaClave() {
+      const panel = document.getElementById('panelNuevaClave');
+      panel.style.display = panel.style.display === "none" ? "block" : "none";
+    }
+
+    function procesarCambioClave() {
+      const nombre = document.getElementById('nombre').value;
+      const claveActual = document.getElementById('clave').value;
+      const nuevaClave = document.getElementById('nuevaClave').value.trim();
+      const divMensaje = document.getElementById('mensaje');
+
+      if (!nombre || !claveActual || nuevaClave === "") { alert("Completa los datos de contraseña."); return; }
+      divMensaje.className = "mensaje carga"; divMensaje.style.display = "block"; divMensaje.textContent = "Procesando...";
+
+      fetch(`${URL_API}?accion=verificarClave&usuario=${encodeURIComponent(nombre)}&clave=${encodeURIComponent(claveActual)}`)
+        .then(res => res.json())
+        .then(ok => {
+          if (!ok || ok.error) { throw new Error(); }
+          fetch(`${URL_API}?accion=registrarClave&usuario=${encodeURIComponent(nombre)}&clave=${encodeURIComponent(claveActual)}&nuevaClave=${encodeURIComponent(nuevaClave)}`)
+            .then(res => res.json())
+            .then(() => {
+              divMensaje.className = "mensaje exito"; divMensaje.textContent = "¡Contraseña actualizada con éxito!";
+              document.getElementById('clave').value = nuevaClave; alternarPanelNuevaClave(); actualizarCartilla();
+            });
+        }).catch(() => { divMensaje.className = "mensaje"; divMensaje.style.backgroundColor = "#f8d7da"; divMensaje.style.color = "#721c24"; divMensaje.textContent = "Contraseña incorrecta."; });
+    }
+
+    document.getElementById('clave').addEventListener('input', actualizarCartilla);
+
+    function bloquearFiltrosYCartilla(msg) {
+      document.getElementById('fechaPartido').disabled = true;
+      document.getElementById('fechaPartido').style.backgroundColor = "#f0f0f0";
+      document.getElementById('contenedorCartilla').innerHTML = `<p style="text-align:center; color:#999; font-style:italic;">${msg}</p>`;
+      document.getElementById('btnGuardar').style.display = "none";
+    }
+
+    function actualizarCartilla() {
+      const fecha = document.getElementById('fechaPartido').value;
+      const nombre = document.getElementById('nombre').value;
+      const clave = document.getElementById('clave').value;
+      const cartilla = document.getElementById('contenedorCartilla');
+      const btnGuardar = document.getElementById('btnGuardar');
+      const sf = document.getElementById('fechaPartido');
+
+      if (fecha) cargarTableroEnVivo(fecha);
+      if (!nombre || !clave) return;
+
+      cartilla.innerHTML = '<p style="text-align: center; color: #666;">Validando credenciales...</p>';
+
+      fetch(`${URL_API}?accion=obtenerPartidos&fecha=${fecha}&usuario=${encodeURIComponent(nombre)}&clave=${encodeURIComponent(clave)}`)
+        .then(res => res.json())
+        .then(partidos => {
+          if (partidos.error) { bloquearFiltrosYCartilla("⚠️ Contraseña incorrecta o acceso denegado."); return; }
+          sf.disabled = false; sf.style.backgroundColor = "#fff"; cartilla.innerHTML = "";
+          if(partidos.length === 0) { cartilla.innerHTML = '<p style="text-align:center; color:#666;">No hay partidos.</p>'; return; }
+
+          partidos.forEach(p => {
+            const div = document.createElement('div');
+            div.style = "background:#fafafa; border:1px solid #e0e0e0; padding:12px 10px; border-radius:8px; margin-bottom:12px;";
+            div.className = "partido-fila-contenedor"; div.setAttribute('data-id-partido', p.id);
+            const dis = p.bloqueado ? 'disabled style="width:35px; text-align:center; background:#e9ecef;"' : 'style="width:35px; text-align:center;"';
+            
+            let cambiosHtml = '';
+            if (p.listaCambios && p.listaCambios.length > 0) {
+              p.listaCambios.forEach((c, idx) => {
+                cambiosHtml += `<div style="font-size:11px; display:flex; justify-content:space-between; margin-top:2px;"><span>🔴 R#${idx+1}: <strong>${c.goles1} - ${c.goles2}</strong></span><span style="color:#777;">🕒 ${c.marcaTemporal}</span></div>`;
+              });
+            }
+
+            div.innerHTML = `
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div style="flex:1; text-align:right; font-size:13px; font-weight:600;">${p.equipo1} ${obtenerBandera(p.equipo1)}</div>
+                <div style="margin:0 10px; display:flex; gap:5px;"><input type="number" class="goles-eq1" min="0" value="${p.goles1}" ${dis}>- <input type="number" class="goles-eq2" min="0" value="${p.goles2}" ${dis}></div>
+                <div style="flex:1; text-align:left; font-size:13px; font-weight:600;">${obtenerBandera(p.equipo2)} ${p.equipo2}</div>
+              </div>
+              <div style="font-size:10px; color:#777; text-align:center; margin-top:4px;">Horario: <strong>${p.horario}</strong> | Grupo: <strong>${p.grupo}</strong> ${p.bloqueado ? ' | <strong style="color:#d32f2f;">🔒 Bloqueado</strong>':''}</div>
+              ${cambiosHtml ? `<div style="background:#f9f9f9; padding:5px; margin-top:5px; border-radius:4px;">${cambiosHtml}</div>`:''}
+            `;
+            cartilla.appendChild(div);
+          });
+          btnGuardar.style.display = partidos.some(p => !p.bloqueado) ? "block" : "none";
+        }).catch(() => { cartilla.innerHTML = '<p style="text-align: center; color: red;">Error al procesar.</p>'; });
+    }
+
+    document.getElementById('formularioMundial').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value;
+      const clave = document.getElementById('clave').value;
+      const fecha = document.getElementById('fechaPartido').value;
+      const divMensaje = document.getElementById('mensaje');
+      const btn = document.getElementById('btnGuardar');
+
+      let resultados = [];
+      document.querySelectorAll('.partido-fila-contenedor').forEach(c => {
+        const id = c.getAttribute('data-id-partido');
+        const i1 = c.querySelector('.goles-eq1');
+        const i2 = c.querySelector('.goles-eq2');
+        if (i1 && i2 && !i1.disabled && i1.value !== "" && i2.value !== "") {
+          resultados.push({ idPartido: id, goles1: parseInt(i1.value, 10), goles2: parseInt(i2.value, 10) });
         }
       });
 
-      const msg = document.getElementById("msg-pronosticos");
-      fetch(`${WEB_APP_URL}?accion=registrarGoles&usuario=${encodeURIComponent(usuarioLogueado)}&clave=${encodeURIComponent(claveLogueada)}&fecha=${fecha}&resultados=${encodeURIComponent(JSON.stringify(resultados))}`)
+      if (resultados.length === 0) { alert("Modifica al menos un marcador válido."); return; }
+      btn.disabled = true; divMensaje.className = "mensaje carga"; divMensaje.style.display = "block"; divMensaje.textContent = "Guardando...";
+
+      fetch(`${URL_API}?accion=registrarGoles&usuario=${encodeURIComponent(nombre)}&clave=${encodeURIComponent(clave)}&fecha=${fecha}&resultados=${encodeURIComponent(JSON.stringify(resultados))}`)
         .then(res => res.json())
-        .then(res => {
-          if (res.exito) {
-            msg.innerHTML = `<p style='color:green;'>${res.mensaje}</p>`;
-            cargarPartidosUsuario();
-            cargarTableroGrupal();
-          } else {
-            msg.innerHTML = `<p style='color:red;'>${res.error}</p>`;
-          }
-        });
-    }
-
-    function cargarTableroGrupal() {
-      const fecha = document.getElementById("fecha-tablero").value;
-      const contenedor = document.getElementById("contenedor-tablero-general");
-
-      fetch(`${WEB_APP_URL}?accion=obtenerApuestasDelDia&fecha=${fecha}`)
-        .then(res => res.json())
-        .then(partidos => {
-          if (partidos.length === 0) {
-            contenedor.innerHTML = "<p>No hay apuestas registradas para este día.</p>";
-            return;
-          }
-
-          let html = "<table><thead><tr><th>Partido</th>";
-          const nombresParticipantes = partidos[0].pronosticos.map(p => p.nombre);
-          nombresParticipantes.forEach(nombre => {
-            html += `<th>${nombre}</th>`;
-          });
-          html += "</tr></thead><tbody>";
-
-          partidos.forEach(p => {
-            html += `<tr><td>${p.equipo1} vs ${p.equipo2} <br><small>(${p.horario})</small></td>`;
-            p.pronosticos.forEach(pr => {
-              html += `<td>${pr.goles1} - ${pr.goles2}</td>`;
-            });
-            html += "</tr>";
-          });
-
-          html += "</tbody></table>";
-          contenedor.innerHTML = html;
-        });
-    }
-
-    function cargarTablaPosiciones() {
-      const contenedor = document.getElementById("contenedor-tabla-posiciones");
-      fetch(`${WEB_APP_URL}?accion=obtenerPosiciones`)
-        .then(res => res.json())
-        .then(tabla => {
-          if (tabla.length === 0) {
-            contenedor.innerHTML = "<p>No hay datos disponibles en la tabla de posiciones.</p>";
-            return;
-          }
-
-          let html = "<table><thead><tr><th>Puesto</th><th>Participante</th><th>Puntos</th></tr></thead><tbody>";
-          tabla.forEach((fila, indice) => {
-            html += `<tr><td>${indice + 1}</td><td>${fila.nombre}</td><td>${fila.puntos}</td></tr>`;
-          });
-          html += "</tbody></table>";
-          contenedor.innerHTML = html;
-        });
-    }
+        .then(() => {
+          divMensaje.className = "mensaje exito"; divMensaje.textContent = "¡Guardado exitosamente!";
+          actualizarCartilla(); setTimeout(() => { divMensaje.style.display = "none"; }, 4000);
+        }).catch(() => { divMensaje.className = "mensaje"; divMensaje.style.backgroundColor = "#f8d7da"; divMensaje.style.color = "#721c24"; divMensaje.textContent = "Error al guardar."; })
+        .finally(() => { btn.disabled = false; });
+    });
   </script>
 </body>
 </html>
