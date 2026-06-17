@@ -101,7 +101,7 @@
   </div>
 
   <script>
-    const URL_API = "https://script.google.com/macros/s/AKfycbzP6eyHSVlxANpWVd2nlwNZMI6Gz-JdGjouF_UQYsjV5w0d3u1Tr3zWi0ZOoKr6RQpt/exec";
+    const URL_API = "https://script.google.com/macros/s/AKfycbxKl7R1EOvjg04Pm-hgRrPZhpP5c75QFgtbSUeM5IlUZFVjE-sTJeZi6DMg1MnQPk-7/exec";
 
     // GENERADOR DINÁMICO DE BANDERAS
     function obtenerBandera(pais) {
@@ -152,6 +152,8 @@
         });
     });
 
+
+
     // RENDERIZADO DEL TABLERO EN VIVO (MUESTRA A TODOS)
     function cargarTableroEnVivo(fecha) {
       const contenedorTablero = document.getElementById('tableroEnvivo');
@@ -172,16 +174,25 @@
 
           let htmlTablero = '';
           partidos.forEach(p => {
+            // Añadimos una pequeña etiqueta informativa de estado encima de cada juego del tablero
+            const badgeEstado = p.bloqueado 
+              ? `<span style="color: #2e7d32; font-size: 10px; font-weight: bold; background: #e8f5e9; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">🔓 Visibles</span>`
+              : `<span style="color: #c62828; font-size: 10px; font-weight: bold; background: #ffebee; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">🕵️ Ocultos</span>`;
+
             htmlTablero += `<div style="margin-bottom: 12px; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
-                              <div style="font-weight: bold; text-align: center; margin-bottom: 6px; color: #1a472a; font-size: 11px;">
-                                ${obtenerBandera(p.equipo1)} ${p.equipo1} vs ${p.equipo2} ${obtenerBandera(p.equipo2)} (${p.horario})
+                              <div style="font-weight: bold; text-align: center; margin-bottom: 6px; color: #1a472a; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 3px;">
+                                ${obtenerBandera(p.equipo1)} ${p.equipo1} vs ${p.equipo2} ${obtenerBandera(p.equipo2)} (${p.horario}) ${badgeEstado}
                               </div>
                               <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; font-size: 11px;">`;
             
             p.pronosticos.forEach(pr => {
-              htmlTablero += `  <div style="background: #f4f7f5; padding: 4px 6px; border-radius: 4px; display: flex; justify-content: space-between;">
+              // Estilo condicional si tiene candado
+              const esSecreto = pr.goles1 === "🔒";
+              const colorMarcador = esSecreto ? "#777" : "#1a472a";
+              
+              htmlTablero += `  <div style="background: #f4f7f5; padding: 4px 6px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
                                   <span style="color:#555;">${pr.nombre}:</span>
-                                  <strong style="color:#1a472a;">${pr.goles1} - ${pr.goles2}</strong>
+                                  <strong style="color:${colorMarcador}; font-size: ${esSecreto ? '10px':'11px'};">${pr.goles1} ${esSecreto ? '' : '-'} ${pr.goles2}</strong>
                                 </div>`;
             });
             htmlTablero += `  </div></div>`;
@@ -193,6 +204,10 @@
           contenedorTablero.innerHTML = `<p style="text-align: center; color: red; margin: 5px 0;">Error de conexión en el tablero.</p>`;
         });
     }
+
+
+
+
 
     // MANEJO DE PESTAÑAS
     function cambiarPestaña(pestaña) {
