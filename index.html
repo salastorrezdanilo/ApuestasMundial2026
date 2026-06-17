@@ -3,275 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fixture & Pronósticos Deportivos</title>
+  <title>Fixture de Pronósticos</title>
   <style>
-    :root {
-      --primary-color: #1e3a8a;
-      --secondary-color: #0284c7;
-      --accent-color: #f59e0b;
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-color: #1e293b;
-      --border-color: #e2e8f0;
-    }
-
+    /* Mantenemos tus estilos exactamente iguales */
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
       margin: 0;
       padding: 20px;
     }
-
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    h1, h2, h3 {
-      text-align: center;
-      color: var(--primary-color);
-    }
-
     .panel {
-      background-color: var(--card-bg);
-      border-radius: 12px;
+      background: white;
       padding: 20px;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-
-    input[type="text"], input[type="password"], input[type="date"], select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-
-    .btn {
-      background-color: var(--primary-color);
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-      width: 100%;
-      transition: background-color 0.2s;
-    }
-
-    .btn:hover {
-      background-color: var(--secondary-color);
-    }
-
-    /* Estilos de la grilla de partidos para el usuario */
     .partido-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 15px;
-      border-bottom: 1px solid var(--border-color);
-      flex-wrap: wrap;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
     }
-
-    .partido-item:last-child {
-      border-bottom: none;
-    }
-
-    .equipo-contenedor {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .equipo-izq { justify-content: flex-end; text-align: right; }
-    .equipo-der { justify-content: flex-start; text-align: left; }
-
     .input-goles {
-      width: 50px;
+      width: 40px;
       text-align: center;
-      padding: 8px;
-      font-size: 18px;
-      font-weight: bold;
-      border: 2px solid var(--border-color);
-      border-radius: 6px;
-      margin: 0 10px;
     }
-
-    .info-partido {
-      width: 100%;
-      text-align: center;
-      font-size: 12px;
-      color: #64748b;
-      margin-bottom: 8px;
-    }
-
     .bloqueado {
-      background-color: #f1f5f9;
-      opacity: 0.7;
+      background-color: #e0e0e0;
     }
-
-    /* Estilos Tabla de Posiciones y Tablero Vivo */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
     }
-
     th, td {
-      padding: 12px;
+      border: 1px solid #ddd;
+      padding: 8px;
       text-align: center;
-      border-bottom: 1px solid var(--border-color);
     }
-
     th {
-      background-color: var(--primary-color);
+      background-color: #007bff;
       color: white;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f8fafc;
-    }
-
-    .candado {
-      color: var(--accent-color);
-      font-size: 16px;
-    }
-
-    .mensaje-alerta {
-      padding: 12px;
-      border-radius: 6px;
-      text-align: center;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    .exito { background-color: #dcfce7; color: #166534; }
-    .error { background-color: #fee2e2; color: #991b1b; }
-
-    @media (max-width: 600px) {
-      .partido-item {
-        flex-direction: column;
-        gap: 10px;
-      }
-      .equipo-contenedor {
-        width: 100%;
-        justify-content: center;
-        text-align: center;
-      }
-      .input-goles {
-        margin: 5px;
-      }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>🏆 PRODE / FIXTURE GRUPAL 🏆</h1>
-
-    <div id="panel-login" class="panel">
-      <h2>🔐 Ingreso al Sistema</h2>
-      <div class="form-group">
-        <label for="select-usuario">Selecciona tu Nombre:</label>
-        <select id="select-usuario">
-          <option value="">Cargando participantes...</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="input-clave">Contraseña:</label>
-        <input type="password" id="input-clave" placeholder="Introduce tu clave segura">
-      </div>
-      <button class="btn" onclick="loginUsuario()">Ingresar / Validar</button>
-      <div id="msg-login"></div>
-    </div>
-
-    <div id="panel-pronosticos" class="panel" style="display: none;">
-      <h2>📝 Mis Pronósticos de la Fecha</h2>
-      <p style="text-align: center; color: #475569;">
-        Gestiona tus predicciones personales. Los partidos se bloquean automáticamente según su hora programada.
-      </p>
-      
-      <div class="form-group" style="max-width: 300px; margin: 0 auto 20px auto;">
-        <label for="fecha-pronosticos" style="text-align: center;">Seleccionar Fecha:</label>
-        <input type="date" id="fecha-pronosticos" onchange="cargarPartidosUsuario()">
-      </div>
-
-      <div id="contenedor-partidos-usuario">
-        </div>
-
-      <div style="margin-top: 20px;">
-        <button class="btn" id="btn-guardar-goles" onclick="guardarMisPronosticos()">💾 Guardar Pronósticos de Hoy</button>
-      </div>
-      <div id="msg-pronosticos"></div>
-    </div>
-
-    <div id="panel-tablero-vivo" class="panel">
-      <h2>📊 Tablero en Vivo (Pronósticos del Grupo)</h2>
-      <p style="text-align: center; color: #475569;">
-        Visualiza en tiempo real las apuestas de todos los jugadores. Las celdas muestran (🔒) hasta que inicie el encuentro.
-      </p>
-
-      <div class="form-group" style="max-width: 300px; margin: 0 auto 20px auto;">
-        <label for="fecha-tablero" style="text-align: center;">Filtrar Día del Grupo:</label>
-        <input type="date" id="fecha-tablero" onchange="cargarTableroGrupal()">
-      </div>
-
-      <div id="contenedor-tablero-general" style="overflow-x: auto;">
-        </div>
-    </div>
-
-    <div id="panel-posiciones" class="panel">
-      <h2>📈 Tabla General de Posiciones</h2>
-      <div id="contenedor-tabla-posiciones">
-        </div>
-    </div>
-
+  <div id="panel-login" class="panel">
+    <h2>Ingreso al Sistema</h2>
+    <select id="select-usuario">
+      <option value="">Cargando participantes...</option>
+    </select>
+    <input type="password" id="input-clave" placeholder="Contraseña">
+    <button onclick="loginUsuario()">Ingresar</button>
+    <div id="msg-login"></div>
   </div>
 
-  <script>
-    // URL de tu aplicación macro Web publicada (Reemplázala obligatoriamente por la tuya de Apps Script)
-    const WEB_APP_URL = "SU_URL_DE_AP_SCRIPT_AQUI"; 
+  <div id="panel-pronosticos" class="panel" style="display: none;">
+    <h2>Mis Pronósticos del Día</h2>
+    <input type="date" id="fecha-pronosticos" onchange="cargarPartidosUsuario()">
+    <div id="contenedor-partidos-usuario"></div>
+    <button id="btn-guardar-goles" onclick="guardarMisPronosticos()">Guardar Pronósticos</button>
+    <div id="msg-pronosticos"></div>
+  </div>
 
-    // Estado global de la aplicación
+  <div id="panel-tablero-vivo" class="panel">
+    <h2>Tablero en Vivo - Pronósticos del Grupo</h2>
+    <input type="date" id="fecha-tablero" onchange="cargarTableroGrupal()">
+    <div id="contenedor-tablero-general"></div>
+  </div>
+
+  <div id="panel-posiciones" class="panel">
+    <h2>Tabla de Posiciones</h2>
+    <div id="contenedor-tabla-posiciones"></div>
+  </div>
+
+
+  <script>
+    const WEB_APP_URL = "SU_URL_DE_APPS_SCRIPT_AQUI"; 
     let usuarioLogueado = "";
     let claveLogueada = "";
 
-    // Inicialización al cargar la página
     document.addEventListener("DOMContentLoaded", function() {
-      // Sincronizar fechas automáticas con el día actual en formato Local (YYYY-MM-DD)
-      const hoy = new Date().toISOString().split('T')[0];
-      document.getElementById('fecha-pronosticos').value = hoy;
-      document.getElementById('fecha-tablero').value = hoy;
-
-      // Cargar componentes públicos nativos inmediatamente
       cargarListaUsuarios();
       cargarTableroGrupal();
       cargarTablaPosiciones();
     });
 
-    // 1. Obtener la lista limpia de participantes de la pestaña Configuración
     function cargarListaUsuarios() {
       fetch(`${WEB_APP_URL}?accion=obtenerParticipantes`)
         .then(res => res.json())
         .then(data => {
           const select = document.getElementById("select-usuario");
-          select.innerHTML = '<option value="">-- Elige tu nombre --</option>';
+          select.innerHTML = '<option value="">-- Selecciona Usuario --</option>';
           if (Array.isArray(data)) {
             data.forEach(user => {
               const option = document.createElement("option");
@@ -280,19 +105,13 @@
               select.appendChild(option);
             });
           }
-        }).catch(err => console.error("Error al cargar participantes:", err));
+        });
     }
 
-    // 2. Control de Login e ingreso del usuario
     function loginUsuario() {
       const usuario = document.getElementById("select-usuario").value;
       const clave = document.getElementById("input-clave").value;
       const msg = document.getElementById("msg-login");
-
-      if (!usuario || !clave) {
-        mostrarMensaje(msg, "Por favor complete los campos obligatorios.", "error");
-        return;
-      }
 
       fetch(`${WEB_APP_URL}?accion=verificarClave&usuario=${encodeURIComponent(usuario)}&clave=${encodeURIComponent(clave)}`)
         .then(res => res.json())
@@ -300,58 +119,49 @@
           if (esValido === true) {
             usuarioLogueado = usuario;
             claveLogueada = clave;
-            mostrarMensaje(msg, "¡Acceso concedido exitosamente!", "exito");
+            msg.innerHTML = "<p style='color:green;'>Acceso correcto</p>";
             document.getElementById("panel-pronosticos").style.display = "block";
-            // Cargar sus respectivos partidos correspondientes
             cargarPartidosUsuario();
           } else {
-            mostrarMensaje(msg, "Contraseña incorrecta. Intente de nuevo.", "error");
+            msg.innerHTML = "<p style='color:red;'>Clave incorrecta</p>";
           }
-        }).catch(err => mostrarMensaje(msg, "Error de validación con el servidor.", "error"));
+        });
     }
 
-    // 3. Renderizar los inputs de goles individuales del usuario autenticado
     function cargarPartidosUsuario() {
       if (!usuarioLogueado) return;
       const fecha = document.getElementById("fecha-pronosticos").value;
       const contenedor = document.getElementById("contenedor-partidos-usuario");
-      contenedor.innerHTML = "<p style='text-align:center;'>Buscando tus encuentros asignados...</p>";
 
       fetch(`${WEB_APP_URL}?accion=obtenerPartidos&fecha=${fecha}&usuario=${encodeURIComponent(usuarioLogueado)}&clave=${encodeURIComponent(claveLogueada)}`)
         .then(res => res.json())
         .then(partidos => {
           if (partidos.error) {
-            contenedor.innerHTML = `<p class='mensaje-alerta error'>${partidos.error}</p>`;
+            contenedor.innerHTML = `<p style='color:red;'>${partidos.error}</p>`;
             return;
           }
+          contenedor.innerHTML = "";
           if (partidos.length === 0) {
-            contenedor.innerHTML = "<p style='text-align:center; color:#94a3b8;'>No se encontraron partidos programados para esta fecha.</p>";
+            contenedor.innerHTML = "<p>No hay partidos para esta fecha.</p>";
             return;
           }
 
-          contenedor.innerHTML = "";
           partidos.forEach(p => {
             const item = document.createElement("div");
             item.className = `partido-item ${p.bloqueado ? 'bloqueado' : ''}`;
-            
             item.innerHTML = `
-              <div class="info-partido">ID: ${p.id} | Hora: ${p.horario} - Grupo/Fase: ${p.grupo}</div>
-              <div class="equipo-contenedor equipo-izq">
-                <span>${p.equipo1}</span>
-              </div>
-              <input type="number" class="input-goles" id="goles1-${p.id}" value="${p.goles1}" ${p.bloqueado ? 'disabled' : ''} min="0">
+              <span>${p.equipo1}</span>
+              <input type="number" class="input-goles" id="goles1-${p.id}" value="${p.goles1}" ${p.bloqueado ? 'disabled' : ''}>
               <span>vs</span>
-              <input type="number" class="input-goles" id="goles2-${p.id}" value="${p.goles2}" ${p.bloqueado ? 'disabled' : ''} min="0">
-              <div class="equipo-contenedor equipo-der">
-                <span>${p.equipo2}</span>
-              </div>
+              <input type="number" class="input-goles" id="goles2-${p.id}" value="${p.goles2}" ${p.bloqueado ? 'disabled' : ''}>
+              <span>${p.equipo2}</span>
+              <span style="font-size:11px; color:gray;">(${p.horario})</span>
             `;
             contenedor.appendChild(item);
           });
         });
     }
 
-    // 4. Guardar los pronósticos ingresados a la base de datos distribuida
     function guardarMisPronosticos() {
       const fecha = document.getElementById("fecha-pronosticos").value;
       const inputsGoles = document.querySelectorAll("#contenedor-partidos-usuario .partido-item");
@@ -362,35 +172,28 @@
         const idPartido = idInput.split("-")[1];
         const g1 = document.getElementById(`goles1-${idPartido}`).value;
         const g2 = document.getElementById(`goles2-${idPartido}`).value;
-        const eq1 = item.querySelectorAll(".equipo-contenedor span")[0].innerText;
-        const eq2 = item.querySelectorAll(".equipo-contenedor span")[1].innerText;
+        const eq1 = item.querySelectorAll("span")[0].innerText;
+        const eq2 = item.querySelectorAll("span")[1].innerText;
 
-        // Validar que no se envíen celdas vacías y que no esté bloqueado
         if (g1 !== "" && g2 !== "" && !item.classList.contains("bloqueado")) {
           resultados.push({ idPartido: idPartido, equipo1: eq1, goles1: g1, goles2: g2, equipo2: eq2 });
         }
       });
 
       const msg = document.getElementById("msg-pronosticos");
-      if (resultados.length === 0) {
-        mostrarMensaje(msg, "No hay nuevos marcadores válidos para guardar o los partidos ya expiraron.", "error");
-        return;
-      }
-
       fetch(`${WEB_APP_URL}?accion=registrarGoles&usuario=${encodeURIComponent(usuarioLogueado)}&clave=${encodeURIComponent(claveLogueada)}&fecha=${fecha}&resultados=${encodeURIComponent(JSON.stringify(resultados))}`)
         .then(res => res.json())
         .then(res => {
           if (res.exito) {
-            mostrarMensaje(msg, res.mensaje, "exito");
+            msg.innerHTML = `<p style='color:green;'>${res.mensaje}</p>`;
             cargarPartidosUsuario();
-            cargarTableroGrupal(); // Refrescar el tablero global para ver reflejado el cambio
+            cargarTableroGrupal();
           } else {
-            mostrarMensaje(msg, res.error, "error");
+            msg.innerHTML = `<p style='color:red;'>${res.error}</p>`;
           }
         });
     }
 
-    // 5. Cargar Tablero en Vivo General sin discriminación
     function cargarTableroGrupal() {
       const fecha = document.getElementById("fecha-tablero").value;
       const contenedor = document.getElementById("contenedor-tablero-general");
@@ -399,32 +202,21 @@
         .then(res => res.json())
         .then(partidos => {
           if (partidos.length === 0) {
-            contenedor.innerHTML = "<p style='text-align:center; color:#94a3b8;'>Sin actividad de apuestas en este día.</p>";
+            contenedor.innerHTML = "<p>No hay apuestas registradas para este día.</p>";
             return;
           }
 
-          let html = "<table><thead><tr><th>Partido / Competidores</th>";
-          
-          // Construir dinámicamente las cabeceras con los nombres de todos los jugadores
+          let html = "<table><thead><tr><th>Partido</th>";
           const nombresParticipantes = partidos[0].pronosticos.map(p => p.nombre);
           nombresParticipantes.forEach(nombre => {
             html += `<th>${nombre}</th>`;
           });
           html += "</tr></thead><tbody>";
 
-          // Llenar filas por cada partido programado
           partidos.forEach(p => {
-            html += `<tr>
-              <td style='text-align:left; font-weight:600;'>
-                <small style='color:#64748b;'>[${p.horario}]</small><br>${p.equipo1} vs ${p.equipo2}
-              </td>`;
-            
+            html += `<tr><td>${p.equipo1} vs ${p.equipo2} <br><small>(${p.horario})</small></td>`;
             p.pronosticos.forEach(pr => {
-              let celdaVal = `${pr.goles1} - ${pr.goles2}`;
-              if (pr.goles1 === "🔒") {
-                celdaVal = "<span class='candado'>🔒 Bloqueado</span>";
-              }
-              html += `<td>${celdaVal}</td>`;
+              html += `<td>${pr.goles1} - ${pr.goles2}</td>`;
             });
             html += "</tr>";
           });
@@ -434,18 +226,24 @@
         });
     }
 
-    // 6. Cargar Tabla de Clasificación General ordenada
     function cargarTablaPosiciones() {
       const contenedor = document.getElementById("contenedor-tabla-posiciones");
       fetch(`${WEB_APP_URL}?accion=obtenerPosiciones`)
         .then(res => res.json())
         .then(tabla => {
           if (tabla.length === 0) {
-            contenedor.innerHTML = "<p style='text-align:center; color:#94a3b8;'>No hay cálculos registrados en la tabla aún.</p>";
+            contenedor.innerHTML = "<p>No hay datos disponibles en la tabla de posiciones.</p>";
             return;
           }
 
-          let html = "<table><thead><tr><th>Puesto</th><th>Participante</th><th>Puntos Totales</th></tr></thead><tbody>";
+          let html = "<table><thead><tr><th>Puesto</th><th>Participante</th><th>Puntos</th></tr></thead><tbody>";
           tabla.forEach((fila, indice) => {
-            html += `<tr>
-              <td><strong>#${indice + 1}
+            html += `<tr><td>${indice + 1}</td><td>${fila.nombre}</td><td>${fila.puntos}</td></tr>`;
+          });
+          html += "</tbody></table>";
+          contenedor.innerHTML = html;
+        });
+    }
+  </script>
+</body>
+</html>
